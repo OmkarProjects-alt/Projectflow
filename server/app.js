@@ -21,7 +21,7 @@ const server = http.createServer(app);
 app.use(helmet());
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://projectflow-ecxyta7gd-omkars-projects-998b71af.vercel.app/",
     method: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
 }));
@@ -29,7 +29,7 @@ app.use(cors({
 const io = new Server(server , {
     cors: {
         origin: [
-            "http://localhost:5173"
+            "https://projectflow-ecxyta7gd-omkars-projects-998b71af.vercel.app/"
         ],
         methods: ["GET", "POST"],
         credentials: true,

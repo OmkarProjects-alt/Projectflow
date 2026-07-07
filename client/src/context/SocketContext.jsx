@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 
 import { useTaskStore } from "../store/tasksStore";
 
-const socket = io("http://localhost:4000", {
+const socket = io("https://projectflow-30pc.onrender.com", {
     withCredentials: true,
     transports: ["websocket"],
 });
