@@ -20,30 +20,37 @@ const server = http.createServer(app);
 
 app.use(helmet());
 
+const allowedOrigins = [
+  "https://projectflow-ecxyta7gd-omkars-projects-998b71af.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
 app.use(cors({
-    origin: "https://projectflow-ecxyta7gd-omkars-projects-998b71af.vercel.app/",
-    method: ["POST", "GET", "PUT", "DELETE"],
-    credentials: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
 }));
 
-const io = new Server(server , {
-    cors: {
-        origin: [
-            "https://projectflow-ecxyta7gd-omkars-projects-998b71af.vercel.app/"
-        ],
-        methods: ["GET", "POST"],
-        credentials: true,
-    },
-
-    pingTimeout: 60000,
-    pingInterval: 25000,
-
-    connectionStateRecovery: {
-        maxDisconnectionDuration: 2 * 60 * 1000,
-        skipMiddlewares: true,
-    },
-
-    allowEIO3: true,
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    skipMiddlewares: true,
+  },
+  allowEIO3: true,
 });
 
 setIo(io);
