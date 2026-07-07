@@ -1,0 +1,63 @@
+import api from '../utils/api';
+import axios from 'axios';
+
+export const createNewProject = (data) => {
+    return api.post('/project/create', 
+        data,
+    );
+}
+
+export const getProjects = () => {
+    return api.get('/project',
+        {},
+    );
+}
+
+export const updateProject = (projectId, UpdatedData) => {
+    return api.patch(`/project/${projectId}`,
+        UpdatedData,
+    );
+};
+
+export const getAssignedProject = (page, limit) => {
+    return api.get(`/project/assigned?page=${page}&limit=${limit}`,
+        {}
+    )
+};
+
+export const getCreatedProjectsOfUser = (userId) => {
+    return api.get(`/project/user-created-projects/${userId}`,
+        {},
+    );
+};
+
+export const getAssignedProjectsOfUser = (userId) => {
+    return api.get(`/project/user-assigned-projects/${userId}`,
+        {},
+    );
+};
+
+export const getProjectsId = () => {
+    return api.get('/project/project-ids', 
+        {},
+    );
+};
+
+
+export const inviteMembers = ({projectId, members}) => {
+    console.log("which type of data cheking", projectId, 'and', members)
+    return api.post("/project/invite-members", {
+        projectId,
+        members,
+    });
+};
+
+
+export const removeMember = (projectId, memberId) => {
+    return api.delete("/project/remove-member", {
+        data: {
+            projectId,
+            memberId,
+        },
+    });
+};

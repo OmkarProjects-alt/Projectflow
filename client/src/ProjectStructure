@@ -1,0 +1,123 @@
+src/
+│
+├── assets/
+│   ├── images/
+│   ├── icons/
+│   └── logo.svg
+│
+├── components/
+│   ├── Navbar/
+│   ├── Sidebar/
+│   ├── Footer/
+│   ├── Loader/
+│   ├── ProtectedRoute/
+│   ├── ProjectCard/
+│   ├── TaskCard/
+│   ├── TaskModal/
+│   ├── UserCard/
+│   └── StatsCard/
+│
+├── pages/
+│   │
+│   ├── auth/
+│   │   ├── Login.jsx
+│   │   └── Register.jsx
+│   │
+│   ├── user/
+│   │   ├── Dashboard.jsx
+│   │   ├── Projects.jsx
+│   │   ├── ProjectDetails.jsx
+│   │   ├── CreateProject.jsx
+│   │   ├── Tasks.jsx
+│   │   ├── KanbanBoard.jsx
+│   │   └── Profile.jsx
+│   │
+│   └── admin/
+│       ├── AdminDashboard.jsx
+│       ├── Users.jsx
+│       ├── ProjectsManagement.jsx
+│       └── Analytics.jsx
+│
+├── layouts/
+│   ├── UserLayout.jsx
+│   └── AdminLayout.jsx
+│
+├── services/
+│   ├── authService.js
+│   ├── projectService.js
+│   ├── taskService.js
+│   └── userService.js
+│
+├── context/
+│   ├── AuthContext.jsx
+│   ├── ProjectContext.jsx
+│   └── TaskContext.jsx
+│
+├── hooks/
+│   ├── useAuth.js
+│   ├── useProjects.js
+│   └── useTasks.js
+│
+├── utils/
+│   ├── api.js
+│   ├── constants.js
+│   ├── formatDate.js
+│   └── storage.js
+│
+├── routes/
+│   └── AppRoutes.jsx
+│
+├── styles/
+│   └── index.css
+│
+├── App.jsx
+├── main.jsx
+└── vite.config.js
+
+
+
+
+
+Background: #0A0A0A
+Cards:      #171717
+Sidebar:    #111111
+
+Primary:    #06B6D4
+Hover:      #0891B2
+
+Text:       #FAFAFA
+Secondary:  #A1A1AA
+
+
+
+
+
+/* Main Background */
+#0F172A
+
+/* Sidebar */
+#111827
+
+/* Cards */
+#1E293B
+
+/* Borders */
+#334155
+
+/* Primary Buttons */
+#3B82F6
+
+/* Success */
+#22C55E
+
+/* Warning */
+#F59E0B
+
+/* Danger */
+#EF4444
+
+/* Main Text */
+#F8FAFC
+
+/* Secondary Text */
+#94A3B8

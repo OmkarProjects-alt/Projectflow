@@ -1,0 +1,48 @@
+backend/
+│
+├── src/
+│   │
+│   ├── config/
+│   │   ├── db.js
+│   │   └── cloudinary.js (optional)
+│   │
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── projectController.js
+│   │   ├── taskController.js
+│   │   └── adminController.js
+│   │
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Project.js
+│   │   └── Task.js
+│   │
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── projectRoutes.js
+│   │   ├── taskRoutes.js
+│   │   └── adminRoutes.js
+│   │
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   ├── adminMiddleware.js
+│   │   └── errorMiddleware.js
+│   │
+│   ├── services/
+│   │   ├── authService.js
+│   │   ├── projectService.js
+│   │   └── taskService.js
+│   │
+│   ├── utils/
+│   │   ├── generateToken.js
+│   │   └── asyncHandler.js
+│   │
+│   ├── seed/
+│   │   └── createAdmin.js
+│   │
+│   └── app.js
+│
+├── .env
+├── server.js
+├── package.json
+└── README.md
