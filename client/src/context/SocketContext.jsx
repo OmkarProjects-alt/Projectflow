@@ -4,10 +4,12 @@ import { io } from "socket.io-client";
 
 import { useTaskStore } from "../store/tasksStore";
 
-const socket = io("http://localhost:4000", {
+const socket = io(import.meta.env.VITE_SOCKET_URL , {
     withCredentials: true,
     transports: ["websocket"],
 });
+
+console.log("socket connection", socket, "and", import.meta.env.VITE_SOCKET_URL);
 
 const SocketContext = createContext(socket);
 
