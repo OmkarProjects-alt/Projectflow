@@ -307,6 +307,13 @@ const StoreNewTask = async (req) => {
       type: "task",
     });
 
+    emitToUser(task.assigned_to, "task:updated", {
+      ...task,
+      assigned_by_id: req.user.uid,
+      assigned_by_name: req.user.name,
+      assigned_by_role: req.user.user_role,
+    });
+
     const activities = {
       ...activityResult.rows[0],
       actor_name: req?.user?.name,
