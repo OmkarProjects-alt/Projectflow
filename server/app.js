@@ -21,7 +21,7 @@ const server = http.createServer(app);
 app.use(helmet());
 
 const allowedOrigins = [
-  "https://projectflow-ecxyta7gd-omkars-projects-998b71af.vercel.app",
+  "https://projectflow-ivory-six.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
 ];
