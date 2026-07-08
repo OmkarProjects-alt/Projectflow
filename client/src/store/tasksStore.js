@@ -226,4 +226,11 @@ export const useTaskStore = create((set) => ({
                 : t
             )
         })),
+
+    addMyCreatedTaskStatus: (taskStatus) =>
+        set((state) => ({
+            allCreatedTasksStatus: state.allCreatedTasksStatus.some((t) => t.tid === taskStatus.tid)
+            ? state.allCreatedTasksStatus
+            : [taskStatus, ...state.allCreatedTasksStatus],
+        })),
 }))

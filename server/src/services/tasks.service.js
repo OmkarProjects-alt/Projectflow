@@ -186,7 +186,7 @@ const StoreNewTask = async (req) => {
 
   try {
     await pool.query("BEGIN");
-
+    console.log(process.env.CLOUD_DB, "my bd connection");
     // Insert task and fetch assigned user in ONE query
     const { rows } = await pool.query(
       `
@@ -220,7 +220,7 @@ const StoreNewTask = async (req) => {
       LEFT JOIN users u
           ON u.uid = nt.assigned_to
 
-      RIGHT JOIN projects p
+      LEFT JOIN projects p
         ON p.pid = nt.project_id
       `,
       [
@@ -237,9 +237,9 @@ const StoreNewTask = async (req) => {
 
     const task = rows[0];
 
+    console.log("my task store ", task);
     // Run independent queries simultaneously
-    const [activityResult] = await Promise.all([
-      pool.query(
+      const activityResult = await pool.query(
         `
         INSERT INTO activities
         (
@@ -262,9 +262,9 @@ const StoreNewTask = async (req) => {
           "New Task",
           `${req.user.name} assigned "${task.title}" task to ${task.assigned_user_name}`,
         ]
-      ),
+      );
 
-      pool.query(
+      await pool.query(
         `
         INSERT INTO project_members
         (project_id,user_id)
@@ -273,9 +273,9 @@ const StoreNewTask = async (req) => {
         DO NOTHING
         `,
         [task.project_id, task.assigned_to]
-      ),
+      );
 
-      pool.query(
+      await pool.query(
         `
         INSERT INTO notifications
         (
@@ -295,8 +295,8 @@ const StoreNewTask = async (req) => {
           `${req.user.name} assigned you a task`,
           `${req.user.name} assigned "${task.title}" to you`,
         ]
-      ),
-    ]);
+      );
+
 
     await pool.query("COMMIT");
 
@@ -323,6 +323,7 @@ const StoreNewTask = async (req) => {
 
     return task;
   } catch (error) {
+    console.log("error", error.message);
     await pool.query("ROLLBACK");
     throw error;
   }

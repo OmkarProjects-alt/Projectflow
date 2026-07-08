@@ -82,6 +82,8 @@ const createNewTask = async (req, res) => {
     
     const task = await StoreNewTask(req);
 
+    console.log("comming task from services to controller", task);
+
         res.status(201).json({
             success: true,
             message: "Project created successufully",

@@ -30,6 +30,7 @@ const CreateTaskModal = ({
   const projects = useProjectStore((state) => state.MyProjects);
   const users = useUserStore((state) => state.users);
   const addTask = useTaskStore((state) => state.addTask);
+  const addMyCreatedTaskStatus = useTaskStore((state) => state.addMyCreatedTaskStatus);
   const UpdateTask = useTaskStore((state) => state.updateTask);
   const updateProject = useProjectStore((state) => state.updateProject);
 
@@ -141,6 +142,7 @@ const CreateTaskModal = ({
         const result = await updateTask(id, UpdatedData);
 
         if (result?.data?.success) {
+          console.log("my comming data from backend in task create", result.data)
           addMessage(result.data.message, true);
           UpdateTask(result?.data?.task);
           if (result?.data?.project) {
@@ -161,8 +163,10 @@ const CreateTaskModal = ({
         });
 
         if (result.data.success) {
+          console.log("my comming data from backend in task create", result.data)
           addMessage(result.data.message, true);
           addTask(result?.data?.task);
+          addMyCreatedTaskStatus(result?.data?.task);
           handleClear();
           onClose();
         }
