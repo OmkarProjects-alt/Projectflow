@@ -5,53 +5,100 @@ import { useTheme } from '../../../context/ThemeProvider';
 import { useUserStore } from '../../../store/userStore';
 import { Search, Filter, ChevronLeft, ChevronRight, Users, Briefcase, CheckCircle } from 'lucide-react';
 
+// Loading Skeleton Component
+const TableSkeleton = ({ theme }) => {
+  return (
+    <div className={`${theme.card.primary} ${theme.border} overflow-hidden animate-pulse`}>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px]">
+          <thead className="bg-gray-800/50">
+            <tr className="border-b border-gray-800">
+              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <th key={i} className="py-3 px-4">
+                  <div className="h-3 w-16 rounded bg-gray-700" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[1, 2, 3, 4, 5].map((row) => (
+              <tr key={row} className="border-b border-gray-800">
+                <td className="px-4 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-gray-700" />
+                    <div className="min-w-0">
+                      <div className="h-4 w-24 rounded bg-gray-700 mb-1" />
+                      <div className="h-3 w-32 rounded bg-gray-700" />
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="h-6 w-16 rounded-full bg-gray-700" />
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="h-6 w-10 rounded-full bg-gray-700" />
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="h-6 w-10 rounded-full bg-gray-700" />
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="h-6 w-16 rounded-full bg-gray-700" />
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="h-4 w-20 rounded bg-gray-700" />
+                </td>
+                <td className="px-4 py-3.5">
+                  <div className="h-8 w-24 rounded-lg bg-gray-700" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Skeleton */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-gray-800">
+        <div className="h-4 w-40 rounded bg-gray-700" />
+        <div className="flex items-center gap-1.5">
+          <div className="h-8 w-16 rounded-lg bg-gray-700" />
+          <div className="h-8 w-8 rounded-lg bg-gray-700" />
+          <div className="h-8 w-8 rounded-lg bg-gray-700" />
+          <div className="h-8 w-8 rounded-lg bg-gray-700" />
+          <div className="h-8 w-16 rounded-lg bg-gray-700" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const TeamDetailTable = ({ assignedTasks }) => {
   const messages = useTaskStore((state) => state.messages);
   const allTasks = useTaskStore((state) => state.allTasks);
   const { theme } = useTheme();
   
-  const { pagination, fetchUsers } = useUserStore();
+  const { pagination, fetchUsers, loading } = useUserStore();
   const users = useUserStore((state) => state.users);
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchKey, setSearchKey] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-
   useEffect(() => {
-
     const timeout = setTimeout(() => {
-
-        fetchUsers(
-            currentPage,
-            10,
-            searchKey,
-            activeFilter
-        );
-
+      fetchUsers(
+        currentPage,
+        10,
+        searchKey,
+        activeFilter
+      );
     }, 400);
 
     return () => clearTimeout(timeout);
+  }, [currentPage, searchKey, activeFilter]);
 
-  }, [
-      currentPage,
-      searchKey,
-      activeFilter
-  ]);
-      
-
-    const totalPages = pagination.totalPages;
-
-    const from =
-      pagination.total === 0
-        ? 0
-        : (pagination.page - 1) * pagination.limit + 1;
-
-    const to =
-      Math.min(
-        pagination.page * pagination.limit,
-        pagination.total
-      );
+  const totalPages = pagination.totalPages;
+  const from = pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1;
+  const to = Math.min(pagination.page * pagination.limit, pagination.total);
 
   const useUserState = useMemo(() => {
     const state = {};
@@ -67,7 +114,6 @@ const TeamDetailTable = ({ assignedTasks }) => {
     return state;
   }, [users, allTasks]);
 
-  // Get avatar gradient
   const getAvatarGradient = (name) => {
     const colors = theme.avatar || [
       "from-blue-500 to-blue-700",
@@ -83,13 +129,11 @@ const TeamDetailTable = ({ assignedTasks }) => {
     return colors[hash % colors.length];
   };
 
-  // Helper function to render pagination buttons
   const renderPaginationButtons = () => {
     const buttons = [];
     const maxVisible = 7;
     
     if (totalPages <= maxVisible) {
-      // Show all pages
       for (let i = 1; i <= totalPages; i++) {
         buttons.push(
           <button
@@ -113,7 +157,6 @@ const TeamDetailTable = ({ assignedTasks }) => {
         );
       }
     } else {
-      // Show first 3 pages, ellipsis, current page, ellipsis, last 3 pages
       buttons.push(
         <button
           key={1}
@@ -136,7 +179,6 @@ const TeamDetailTable = ({ assignedTasks }) => {
         );
       }
 
-      // Show pages around current
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
       
@@ -186,7 +228,6 @@ const TeamDetailTable = ({ assignedTasks }) => {
 
   return (
     <div className={`${theme.card.primary} ${theme.border} rounded-lg overflow-hidden mt-7`}>
-      {/* Header - Search & Filter */}
       <div className={`
         flex flex-col md:flex-row md:items-center md:justify-between
         gap-3 p-4
@@ -212,7 +253,7 @@ const TeamDetailTable = ({ assignedTasks }) => {
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           {/* Search Input */}
-          <div className="relative flex-1 sm:min-w-[200px]">
+          <div className="relative flex-1 sm:min-w-50">
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted} h-4 w-4`} />
             <input 
               type="text" 
@@ -268,7 +309,10 @@ const TeamDetailTable = ({ assignedTasks }) => {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px]">
+        {loading ? (
+          <TableSkeleton theme={theme} />
+        ): (
+          <table className="w-full min-w-[900px]">
           <thead className={`${theme.table.header}`}>
             <tr className={`${theme.table.divider} border-b`}>
               <th className={`py-3 px-4 text-left text-xs font-medium ${theme.text.secondary} uppercase tracking-wider`}>
@@ -453,6 +497,7 @@ const TeamDetailTable = ({ assignedTasks }) => {
             )}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Pagination */}
@@ -518,4 +563,4 @@ const TeamDetailTable = ({ assignedTasks }) => {
   )
 }
 
-export default TeamDetailTable
+export default TeamDetailTable;

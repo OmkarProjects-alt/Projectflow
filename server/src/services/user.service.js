@@ -147,60 +147,107 @@ const fetchUsers = async (
 
 };
 
-const searchMembersService = async (
-    query,
-    projectId
-) => {
-
-    if (!query || !projectId) {
+const searchMembersService = async (query, projectId) => {
+    if (!query?.trim() || !projectId) {
         return [];
     }
 
+    const search = `%${query.trim()}%`;
+
     const result = await pool.query(
         `
-        SELECT
+        SELECT DISTINCT
             u.uid,
             u.name,
             u.email,
             u.user_role
+
         FROM users u
+
+        LEFT JOIN project_members pm
+            ON pm.user_id = u.uid
+
+        LEFT JOIN projects p
+            ON p.pid = pm.project_id
 
         WHERE
             u.is_verified = true
 
-        AND
-        (
-            LOWER(u.name) LIKE LOWER($1)
-            OR
-            LOWER(u.email) LIKE LOWER($1)
-        )
-
         AND NOT EXISTS (
-
             SELECT 1
-
-            FROM project_members pm
-
-            WHERE
-                pm.project_id = $2
-            AND
-                pm.user_id = u.uid
-
+            FROM project_members current_pm
+            WHERE current_pm.project_id = $2
+              AND current_pm.user_id = u.uid
         )
 
-        ORDER BY u.name
-        LIMIT 10
+        AND (
+            u.name ILIKE $1
+            OR u.email ILIKE $1
+            OR COALESCE(u.user_role, '') ILIKE $1
+            OR p.title ILIKE $1
+        )
+
+        ORDER BY
+            CASE
+                WHEN u.name ILIKE $1 THEN 1
+                WHEN u.email ILIKE $1 THEN 2
+                WHEN COALESCE(u.user_role, '') ILIKE $1 THEN 3
+                WHEN p.title ILIKE $1 THEN 4
+                ELSE 5
+            END,
+            u.name ASC
+
+        LIMIT 10;
         `,
-        [
-            `%${query}%`,
-            projectId,
-        ]
+        [search, projectId]
     );
 
     return result.rows;
 };
 
+
+const updateUserProfileService = async (
+    userId,
+    req,
+) => {
+
+     const fieldsMap = {
+        name: "name",
+        about: "about",
+        location: "location",
+        role: "user_role",
+        skills: "skills"
+    }
+
+    const update = [];
+    const values = [];
+    let index = 1;
+
+    for (const [field, fieldValue] of Object.entries(req.body)) {
+        const dbField = fieldsMap[field];
+        if (!dbField) continue;
+
+        update.push(`${dbField} = $${index}`);
+        values.push(fieldValue);
+        index++;
+    }
+
+    values.push(userId);
+
+    const query = `
+    UPDATE users
+    SET ${update.join(', ')}, updated_at =  CURRENT_TIMESTAMP
+    WHERE uid = $${index}
+    RETURNING *
+    `
+
+    const result = await pool.query(query, values);
+
+    return result;
+}
+
 module.exports = {
     searchMembersService,
     fetchUsers,
+    updateUserProfileService
 };

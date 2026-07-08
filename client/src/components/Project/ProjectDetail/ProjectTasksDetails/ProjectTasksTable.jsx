@@ -14,7 +14,73 @@ import CreateTaskModal from "../../../common/CreateTaskModal";
 import DeleteTaskConfirm from "../../../common/DeleteTaskConfirm";
 import { useTaskStore } from "../../../../store/tasksStore";
 
-const ProjectTasksTable = ({ tasks, project }) => {
+// Loading Skeleton Component
+const TableSkeleton = ({ theme }) => {
+  return (
+    <div className={`${theme.card.primary} ${theme.border} overflow-hidden animate-pulse`}>
+      {/* Header Skeleton */}
+      <div className={`flex items-center justify-between px-4 py-3 border-b ${theme.table.divider}`}>
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-24 rounded bg-gray-700" />
+          <div className="h-5 w-8 rounded-full bg-gray-700" />
+        </div>
+        <div className="h-8 w-24 rounded-lg bg-gray-700" />
+      </div>
+
+      {/* Table Skeleton */}
+      <div className="overflow-x-auto max-h-70 h-70 overflow-y-auto">
+        <table className="w-full">
+          <thead className={`${theme.table.header} sticky top-0 z-10`}>
+            <tr className={`${theme.table.divider} border-b`}>
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <th key={i} className="px-3 py-3">
+                  <div className="h-3 w-16 rounded bg-gray-700" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[1, 2, 3, 4, 5].map((row) => (
+              <tr key={row} className={`${theme.table.divider} border-b`}>
+                <td className="px-3 py-3.5">
+                  <div className="h-4 w-32 rounded bg-gray-700" />
+                </td>
+                <td className="px-3 py-3.5">
+                  <div className="flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-gray-700" />
+                    <div className="h-4 w-20 rounded bg-gray-700" />
+                  </div>
+                </td>
+                <td className="px-3 py-3.5">
+                  <div className="h-6 w-16 rounded-full bg-gray-700" />
+                </td>
+                <td className="px-3 py-3.5">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-gray-700" />
+                    <div className="h-4 w-14 rounded bg-gray-700" />
+                  </div>
+                </td>
+                <td className="px-3 py-3.5">
+                  <div className="h-4 w-24 rounded bg-gray-700" />
+                </td>
+                <td className="px-2 py-2">
+                  <div className="h-8 w-8 rounded-lg bg-gray-700" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Load More Skeleton */}
+      <div className={`flex justify-center py-4 border-t ${theme.table.divider}`}>
+        <div className="h-9 w-40 rounded-xl bg-gray-700" />
+      </div>
+    </div>
+  );
+};
+
+const ProjectTasksTable = ({ tasks, project, loading }) => {
   const { theme } = useTheme();
   
   const [openTaskModal, setOpenTaskModal] = useState(false);
@@ -54,8 +120,6 @@ const ProjectTasksTable = ({ tasks, project }) => {
     return () => document.removeEventListener("click", closeMenu);
   }, []);
 
-  console.log("see my tasks", tasks);
-
   const handleEditTask = (tid) => {
     const task = tasks.find(task => task.tid === tid);
 
@@ -73,8 +137,8 @@ const ProjectTasksTable = ({ tasks, project }) => {
   }
 
   const onLoadMore = () => {
-   const page = createdTasksPagination.page + 1;
-   const limit = 10;
+    const page = createdTasksPagination.page + 1;
+    const limit = 10;
 
     FetchMyTasks(page, limit, project.pid)
   }
@@ -126,6 +190,11 @@ const ProjectTasksTable = ({ tasks, project }) => {
 
     return colors[hash % colors.length];
   };
+
+  // Show loading skeleton while fetching data
+  if (loading) {
+    return <TableSkeleton theme={theme} />;
+  }
 
   return (
     <>
@@ -213,9 +282,6 @@ const ProjectTasksTable = ({ tasks, project }) => {
               {tasks?.length > 0 ? (
                 tasks.map((task) => {
                   const priorityStyle = getPriorityStyle(task.priority);
-                  // const assignedUser = users?.find(
-                  //   (user) => user.uid === task.assigned_to
-                  // );
                   const randomColor = getUserColor(task.assigned_user_name);
 
                   return (
@@ -447,6 +513,8 @@ const ProjectTasksTable = ({ tasks, project }) => {
                         duration-200
                         disabled:opacity-50
                         disabled:cursor-not-allowed
+                        hover:scale-[1.02]
+                        active:scale-[0.98]
                     `}
                 >
                     {fetchingLoading ? (
@@ -460,12 +528,12 @@ const ProjectTasksTable = ({ tasks, project }) => {
                 </button>
             ) : (
                 tasks.length > 0 && (
-                    <p className={theme.text.muted}>
+                    <p className={`${theme.text.muted} text-sm`}>
                         You've reached the end.
                     </p>
                 )
             )}
-        </div>
+          </div>
         </div>
       </div>
     </>

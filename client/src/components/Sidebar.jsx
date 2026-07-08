@@ -57,7 +57,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-all duration-300"
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-sm transition-all duration-300"
         />
       )}
 
@@ -69,7 +69,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
           w-64
           ${theme.layout.sidebar}
           ${theme.text.primary}
-          z-40
+          z-30
           transform
           transition-transform
           duration-300

@@ -282,3 +282,15 @@ ON activities(project_id);
 
 CREATE INDEX idx_notifications_receiver
 ON notifications(receiver_id);
+
+
+INSERT INTO users (name, email, password, is_verified) VALUES
+('Harshad Gaikwad', 'harshad@gmail.com', '$2b$10$8K1mVqJ5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K', true);
+
+
+UPDATE users
+SET password = '$2b$10$.IsbbQPL.uOixiO89IXWTuI.NOJTHqCwb7bo\A6\hX9GHZtAKoUGS'
+WHERE password = '$2b$10$8K1mVqJ5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K';
+
+
+

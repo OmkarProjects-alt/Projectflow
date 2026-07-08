@@ -25,6 +25,7 @@ const ProjectDetails = () => {
 
   const [openTaskModal, setTaskModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [currentTasksStatus, setCurrentTasksStatus] = useState([]);
 
   const { projectId } = useParams();
 
@@ -39,18 +40,30 @@ const ProjectDetails = () => {
     if(IsTaskAlreadyExist) return
     console.log("is this running ")
 
+    setLoading(true)
+
     FetchAllTasksStatus(projectId);
+
+    setLoading(false)
     
   }, [projectId, IsTaskAlreadyExist, FetchAllTasksStatus]);
+
+ useEffect(() => {
+    if (!projectId) return;
+
+    const filtered = myProjectTasksStatus.filter(
+        task => String(task.project_id) === String(projectId)
+    );
+
+    setCurrentTasksStatus(filtered);
+
+  }, [projectId, myProjectTasksStatus]);
 
 
   const project = projects.find(
     (project) => String(project.pid) === String(projectId)
   );
 
-  const currentTasksStatus = myProjectTasksStatus.filter((task) => 
-    String(task?.project_id) === String(projectId)
-  );
 
 
   const UsersWorkingOnTasks = users.filter((user) => 
@@ -159,7 +172,11 @@ const ProjectDetails = () => {
         {/* Tasks Section */}
         {!loading && currentTasksStatus?.length > 0 && (
           <>
-            <StateSection project={project} tasks={currentTasksStatus} />
+            <StateSection 
+              project={project} 
+              tasks={currentTasksStatus} 
+              loading={loading}
+            />
             <ProjectTasksDetails 
               tasks={currentTasksStatus} 
               users={UsersWorkingOnTasks} 

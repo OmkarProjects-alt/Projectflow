@@ -31,8 +31,9 @@ Router.post('/register',
 
         let verified = false;
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); 
-        console.log("my otp", otp);
+        const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+        const hash = await bcrypt.hash("12345678", 10);
+        console.log("my otp", otp, "and", hash);
         const result = await sendMailWithRetry(email, "Your OTP Code", otp, 2);
 
         if(!result.status) {
@@ -127,6 +128,8 @@ Router.post('/re-send-otp',
         let verified = false;
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); 
+
+        console.log("my otp", otp);
 
         const result = await await sendMailWithRetry(email, "Your OTP Code", otp, 2);
 

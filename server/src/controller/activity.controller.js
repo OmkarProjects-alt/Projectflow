@@ -18,7 +18,7 @@ const getActivities = async (req, res) => {
 
 const getActivitiesController = async (req, res) => {
 
-    const result = await getActivitiesService(req.query);
+    const result = await getActivitiesService(req?.user?.uid, req.query);
 
     return res.status(200).json({
         success: true,

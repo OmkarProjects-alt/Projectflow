@@ -2,10 +2,12 @@ const pool = require("../config/DbConnection");
 
 const fetchActivities = async (userId, query) => {
 
+    console.log("userId", userId, "and query", query);
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
 
     const offset = (page - 1) * limit;
+
 
     const totalResult = await pool.query(
         `
@@ -82,8 +84,7 @@ const fetchActivities = async (userId, query) => {
 };
 
 
-const getActivitiesService = async (query) => {
-
+const getActivitiesService = async (userId, query) => {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
     const offset = (page - 1) * limit;
@@ -100,82 +101,68 @@ const getActivitiesService = async (query) => {
     const where = [];
     const values = [];
 
+    // User must belong to the project
+    values.push(userId);
+
+    where.push(`
+        EXISTS (
+            SELECT 1
+            FROM project_members pm
+            WHERE
+                pm.project_id = a.project_id
+                AND pm.user_id = $${values.length}
+        )
+    `);
+
     // ---------------- SEARCH ----------------
 
     if (search) {
-
         values.push(`%${search}%`);
 
         where.push(`
-        (
-            a.title ILIKE $${values.length}
-            OR a.message ILIKE $${values.length}
-            OR a.type ILIKE $${values.length}
-            OR u.name ILIKE $${values.length}
-            OR u.email ILIKE $${values.length}
-            OR p.title ILIKE $${values.length}
-            OR t.title ILIKE $${values.length}
-        )
+            (
+                a.title ILIKE $${values.length}
+                OR a.message ILIKE $${values.length}
+                OR a.type ILIKE $${values.length}
+                OR u.name ILIKE $${values.length}
+                OR u.email ILIKE $${values.length}
+                OR p.title ILIKE $${values.length}
+                OR t.title ILIKE $${values.length}
+            )
         `);
-
     }
 
     // ---------------- TYPE ----------------
 
     if (type && type !== "all") {
-
         values.push(type);
-
-        where.push(
-            `a.type = $${values.length}`
-        );
-
+        where.push(`a.type = $${values.length}`);
     }
 
     // ---------------- PROJECT ----------------
 
     if (projectId) {
-
         values.push(projectId);
-
-        where.push(
-            `a.project_id = $${values.length}`
-        );
-
+        where.push(`a.project_id = $${values.length}`);
     }
 
     // ---------------- ACTOR ----------------
 
     if (actorId) {
-
         values.push(actorId);
-
-        where.push(
-            `a.user_id = $${values.length}`
-        );
-
+        where.push(`a.user_id = $${values.length}`);
     }
 
     // ---------------- DATE ----------------
 
     if (startDate) {
-
         values.push(startDate);
-
-        where.push(
-            `a.created_at >= $${values.length}`
-        );
-
+        where.push(`a.created_at >= $${values.length}`);
     }
 
     if (endDate) {
-
         values.push(endDate);
-
-        where.push(
-            `a.created_at <= $${values.length}`
-        );
-
+        where.push(`a.created_at <= $${values.length}`);
     }
 
     const whereClause =
@@ -192,13 +179,13 @@ const getActivitiesService = async (query) => {
         FROM activities a
 
         LEFT JOIN users u
-        ON a.user_id = u.uid
+            ON a.user_id = u.uid
 
         LEFT JOIN projects p
-        ON a.project_id = p.pid
+            ON a.project_id = p.pid
 
         LEFT JOIN tasks t
-        ON a.task_id = t.tid
+            ON a.task_id = t.tid
 
         ${whereClause}
         `,
@@ -209,8 +196,7 @@ const getActivitiesService = async (query) => {
 
     // ---------------- DATA ----------------
 
-    values.push(limit);
-    values.push(offset);
+    const dataValues = [...values, limit, offset];
 
     const activities = await pool.query(
         `
@@ -218,7 +204,7 @@ const getActivitiesService = async (query) => {
 
             a.*,
 
-            u.name  AS actor_name,
+            u.name AS actor_name,
             u.email AS actor_email,
 
             p.title AS project_name,
@@ -228,46 +214,36 @@ const getActivitiesService = async (query) => {
         FROM activities a
 
         LEFT JOIN users u
-        ON a.user_id = u.uid
+            ON a.user_id = u.uid
 
         LEFT JOIN projects p
-        ON a.project_id = p.pid
+            ON a.project_id = p.pid
 
         LEFT JOIN tasks t
-        ON a.task_id = t.tid
+            ON a.task_id = t.tid
 
         ${whereClause}
 
         ORDER BY a.created_at DESC
 
-        LIMIT $${values.length - 1}
-        OFFSET $${values.length}
+        LIMIT $${dataValues.length - 1}
+        OFFSET $${dataValues.length}
         `,
-        values
+        dataValues
     );
 
     return {
-
         activities: activities.rows,
 
         pagination: {
-
             page,
-
             limit,
-
             total,
-
             totalPages: Math.ceil(total / limit),
-
             hasNext: page < Math.ceil(total / limit),
-
             hasPrev: page > 1,
-
         },
-
     };
-
 };
 
 module.exports = {

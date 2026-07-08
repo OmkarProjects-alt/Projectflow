@@ -270,7 +270,7 @@ const TasksActivity = () => {
       </div>
 
       {/* Chart */}
-      <div className="w-full h-50 sm:h-55">
+      <div className="w-full h-60 sm:h-72">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={chartData}>
             <defs>

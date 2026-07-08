@@ -165,7 +165,7 @@ const TeamActivity = () => {
   }
 
   return (
-    <div className={`w-full rounded-2xl ${theme.card.primary} ${theme.table.divider} border ${theme.text.primary} flex flex-col max-h-133`}>
+    <div className={`w-full rounded-2xl ${theme.card.primary} ${theme.table.divider} border ${theme.text.primary} flex flex-col h-134`}>
       {/* Header */}
       <div className={`flex items-center justify-between p-4 border-b ${theme.table.divider} shrink-0`}>
         <div className="flex items-center gap-2">

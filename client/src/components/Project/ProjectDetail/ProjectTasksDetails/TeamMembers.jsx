@@ -4,10 +4,39 @@ import { Users, UserPlus } from 'lucide-react'
 import { useParams } from "react-router-dom"
 import InviteMemberBtn from '../../../common/InviteMemberBtn'
 
-const TeamMembers = ({ users, onInvite }) => {
+// Loading Skeleton Component
+const TeamMembersSkeleton = ({ theme }) => {
+  return (
+    <div className={`${theme.card.primary} ${theme.border} p-4 transition-all duration-300 animate-pulse`}>
+      {/* Header Skeleton */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 rounded bg-gray-700" />
+          <div className="h-6 w-32 rounded bg-gray-700" />
+          <div className="h-5 w-8 rounded-full bg-gray-700" />
+        </div>
+        <div className="h-8 w-20 rounded-lg bg-gray-700" />
+      </div>
 
+      {/* Members Grid Skeleton */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg">
+            <div className="w-9 h-9 rounded-full bg-gray-700" />
+            <div className="flex-1 min-w-0">
+              <div className="h-4 w-24 rounded bg-gray-700 mb-1" />
+              <div className="h-3 w-32 rounded bg-gray-700" />
+            </div>
+            <div className="w-2 h-2 rounded-full bg-gray-700" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const TeamMembers = ({ users, onInvite, loading }) => {
   const { projectId } = useParams();
-
   const { theme } = useTheme();
 
   const getUserColor = (user) => {
@@ -42,6 +71,10 @@ const TeamMembers = ({ users, onInvite }) => {
       .slice(0, 2)
   }
 
+  // Show loading skeleton while fetching data
+  if (loading) {
+    return <TeamMembersSkeleton theme={theme} />;
+  }
 
   return (
     <>
@@ -169,7 +202,7 @@ const TeamMembers = ({ users, onInvite }) => {
             <p className="text-xs mt-1">
               Invite team members to collaborate
             </p>
-            <InviteMemberBtn users={users} projectId={projectId}  />
+            <InviteMemberBtn users={users} projectId={projectId} />
           </div>
         )}
       </div>

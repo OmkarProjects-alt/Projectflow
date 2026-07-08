@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTheme } from '../../../../context/ThemeProvider'
 import ProjectTasksTable from './ProjectTasksTable'
 import ProjectOverview from './ProjectOverview';
 import TeamMembers from './TeamMembers';
 import { useTaskStore } from '../../../../store/tasksStore';
 
-const ProjectTasksDetails = ({ tasks, users, project }) => {
+const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
   const { theme } = useTheme();
 
   const myProjectTasks = useTaskStore((state) => state.createdTasks);
   const FetchMyTasks = useTaskStore((state) => state.FetchMyTasks);
+
+  const [isFetching, setIsFetching] = useState(false);
 
   console.log("my all task my project", myProjectTasks);
 
@@ -23,6 +25,7 @@ const ProjectTasksDetails = ({ tasks, users, project }) => {
 
     const FecthProjectTasks = async () => {
       try {
+        setIsFetching(true);
         let page = 1;
         let limit = 10
         await FetchMyTasks(page, limit, project.pid);
@@ -30,6 +33,8 @@ const ProjectTasksDetails = ({ tasks, users, project }) => {
         
       } catch (error) {
         console.error("Error fetching tasks:", error);
+      } finally {
+        setIsFetching(false);
       }
     };
     FecthProjectTasks();
@@ -47,12 +52,19 @@ const ProjectTasksDetails = ({ tasks, users, project }) => {
             <ProjectTasksTable 
               tasks={TaskDetail}
               project={project}
+              loading={isFetching}
             />
           </div>
 
           <div className="flex flex-col gap-4 min-w-0 mt-4 lg:mt-0">
-            <ProjectOverview tasks={tasks} />
-            <TeamMembers users={users} />
+            <ProjectOverview 
+              tasks={tasks} 
+              loading={isFetching}
+            />
+            <TeamMembers 
+              users={users} 
+              loading={isFetching}
+            />
           </div>
         </div>
       </div>

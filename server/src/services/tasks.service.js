@@ -635,7 +635,6 @@ const FetchAllMyTasksOfProject = async (pid) => {
         t.deadline,
         t.status,
         t.created_at,
-        t.updated_at,
 
         u.uid        AS assigned_user_id,
         u.name       AS assigned_user_name,
