@@ -4,7 +4,10 @@ import { io } from "socket.io-client";
 
 import { useTaskStore } from "../store/tasksStore";
 
-const socket = io(import.meta.env.VITE_SOCKET_URL , {
+const socketUrl = (import.meta.env.VITE_SOCKET_URL || "https://projectflow-30pc.onrender.com")
+  .replace(/^['"]|['"]$/g, "");
+
+const socket = io(socketUrl, {
     withCredentials: true,
     transports: ["websocket"],
 });
