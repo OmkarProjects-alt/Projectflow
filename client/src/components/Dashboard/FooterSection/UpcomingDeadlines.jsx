@@ -69,7 +69,7 @@ const UpcomingDeadlines = () => {
         {UpCommingDeadLineTasks.map((task, index) => (
           <Link
             key={task.tid || index}
-            to={`/projectflow/tasks/${task.tid}`}
+            to={`/projectflow/task/${task.tid}`}
             className={`
               flex items-center justify-between
               p-3 rounded-lg
