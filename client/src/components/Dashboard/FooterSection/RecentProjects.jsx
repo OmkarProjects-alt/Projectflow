@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useProjectStore } from "../../../store/projectStore";
 import { useTheme } from "../../../context/ThemeProvider";
 import { FolderKanban, Filter, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const RecentProjects = () => {
   const { theme } = useTheme();
@@ -9,6 +10,7 @@ const RecentProjects = () => {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   const projects = useProjectStore((state) => state.MyProjects);
+  const loading = useProjectStore((state) => state.loading);
 
   const FilteredProjects = useMemo(() => {
     if (filter === "all") return projects;
@@ -166,7 +168,8 @@ const RecentProjects = () => {
             const status = getProjectStatus(project?.status);
 
             return (
-              <div
+              <Link
+                to={`/projectflow/projects/${project?.pid}`}
                 key={project?.pid}
                 className={`
                   flex items-center justify-between
@@ -194,7 +197,7 @@ const RecentProjects = () => {
                     {status?.label}
                   </span>
                 </div>
-              </div>
+              </Link>
             );
           })
         )}

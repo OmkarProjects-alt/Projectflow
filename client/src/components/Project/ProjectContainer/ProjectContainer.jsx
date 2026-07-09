@@ -3,10 +3,12 @@ import { useTheme } from '../../../context/ThemeProvider';
 import ProjectCard from './ProjectCard';
 import { useProjectStore } from '../../../store/projectStore';
 import { Filter, SortAsc, FolderKanban, X } from 'lucide-react';
+import ProjectContainerSkeleton from './ProjectContainerSkeleton';
 
 const ProjectContainer = () => {
   const { theme } = useTheme();
   const projects = useProjectStore((state) => state.MyProjects);
+  const isLoading = useProjectStore((state) => state.loading);
 
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('newest');
@@ -83,7 +85,9 @@ const ProjectContainer = () => {
 
   return (
     <div className="h-full">
-      {projects?.length === 0 ? (
+      {isLoading ? (
+        <ProjectContainerSkeleton />
+      ) : projects?.length === 0 ? (
         <div className={`
           flex flex-col items-center justify-center
           h-full

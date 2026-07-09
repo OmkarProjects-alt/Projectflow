@@ -34,11 +34,10 @@ export function useUpdateStatus () {
           if(result?.data?.success) {
             addMessage(result?.data?.message, true);
             updateMyTask(result?.data.task);
-            console.log("my task here", result?.data?.task)
           }
 
         } catch (error) {
-          addMessage(error?.response?.data?.message || error?.message);
+          addMessage(error?.response?.data?.message || "Something went wrong");
         }
       }
     }

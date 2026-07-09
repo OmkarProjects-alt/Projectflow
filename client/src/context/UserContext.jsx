@@ -14,6 +14,16 @@ const UserContext = ({children}) => {
 
     const { addMessage } = useError();
 
+    const logoutUser = () => {
+        return api.post(
+            "/auth/logout",
+            {},
+        );
+    };
+
+    const verifySession = () => {
+        return api.get("/auth/me");
+    };
 
     const fetchUserData = async () => {
         if (userData || loading) return;
@@ -42,6 +52,8 @@ const UserContext = ({children}) => {
             userData,
             setUserData,
             fetchUserData,
+            logoutUser,
+            verifySession
         }}
     >
         {children}

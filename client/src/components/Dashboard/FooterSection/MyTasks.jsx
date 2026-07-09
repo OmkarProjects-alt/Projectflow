@@ -10,6 +10,7 @@ const MyTasks = () => {
   const [filter, setFilter] = useState("all");
 
   const Tasks = useTaskStore((state) => state.MyTasks);
+  const loading = useTaskStore((state) => state.loading);
 
   const filterTasks = useMemo(() => {
     if (filter === "all") return Tasks;

@@ -302,25 +302,65 @@ const ProjectTasksTable = ({ tasks, project, loading }) => {
                       </td>
 
                       <td className="px-3 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`
-                              flex items-center justify-center
-                              w-7 h-7
-                              rounded-full
-                              text-[10px]
-                              font-semibold
-                              text-white
-                              bg-linear-to-br
-                              ${randomColor}
-                              shrink-0
-                            `}
-                          >
-                            {task?.assigned_user_name?.charAt(0)?.toUpperCase() || "U"}
-                          </span>
-                          <span className={`${theme.text.secondary} text-sm truncate max-w-20`}>
-                            {task?.assigned_user_name || "Unassigned"}
-                          </span>
+                        <div className="flex items-center gap-3">
+                          {/* Avatar */}
+                          <div className="relative shrink-0">
+                            <span
+                              className={`
+                                flex items-center justify-center
+                                w-8 h-8
+                                rounded-full
+                                text-xs
+                                font-semibold
+                                text-white
+                                bg-linear-to-br
+                                ${randomColor}
+                                shadow-md
+                                transition-transform
+                                duration-200
+                                hover:scale-110
+                              `}
+                            >
+                              {task?.assigned_user_name?.charAt(0)?.toUpperCase() || "U"}
+                            </span>
+                          </div>
+
+                          {/* User Info */}
+                          <div className="flex flex-col min-w-0">
+                            <div className="flex flex-col items-center gap-1">
+                              <span className={`
+                                ${theme.text.primary} 
+                                text-sm 
+                                font-medium 
+                                truncate 
+                                max-w-[80px] 
+                                sm:max-w-[120px]
+                                transition-colors
+                                duration-200
+                                group-hover:text-blue-400
+                              `}>
+                                {task?.assigned_user_name || "Unassigned"}
+                              </span>
+                              
+                              {/* Role Badge */}
+                              {task?.assigned_user_role && (
+                                <span className={`
+                                  px-1.5 py-0.5
+                                  rounded-full
+                                  text-[9px]
+                                  font-medium
+                                  bg-purple-500/10
+                                  text-purple-400
+                                  border
+                                  border-purple-500/20
+                                  hidden sm:inline-block
+                                  whitespace-nowrap
+                                `}>
+                                  {task?.assigned_user_role}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </td>
 

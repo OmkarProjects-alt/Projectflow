@@ -130,6 +130,7 @@ const ProfileAbout = ({ user, isCurrentUser }) => {
         className={`
           ${!isCurrentUser && !hasAnyData ? 'hidden' : 'block'}
           ${theme.card.primary}
+          ${theme.border}
           p-6
           rounded-xl
           transition-all

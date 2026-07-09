@@ -6,6 +6,7 @@ import MessageAlert from '../../components/common/MessageAlert';
 import { useProjectStore } from "../../store/projectStore";
 import { useParams } from "react-router-dom";
 import { X, Calendar, FileText, FolderPlus, Save } from "lucide-react";
+import ModalPortal from "./ModalPortal";
 
 const CreateProjectModal = ({ 
   open, 
@@ -143,7 +144,6 @@ const CreateProjectModal = ({
         }
       }
     } catch (error) {
-      console.error(error?.response?.data?.message || error.message);
       addMessage(error?.response?.data?.message || error.message);
     } finally {
       setLoading(false);
@@ -151,238 +151,240 @@ const CreateProjectModal = ({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all duration-300"
-      onClick={onClose}
-    >
+    <ModalPortal>
       <div
-        className={`
-          w-full max-w-xl
-          ${theme.card.modal}
-          p-6
-          max-h-[90vh]
-          overflow-y-auto
-          transition-all
-          duration-300
-          scale-100
-          z-50
-        `}
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-50 flex items-center justify-center px-3 bg-black/60 backdrop-blur-sm transition-all duration-300"
+        onClick={onClose}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className={`
-              p-2 rounded-lg
-              bg-blue-500/10
-              ${theme.text.info}
-            `}>
-              <FolderPlus size={20} />
+        <div
+          className={`
+            w-full max-w-xl
+            ${theme.card.modal}
+            p-6
+            max-h-[90vh]
+            overflow-y-auto
+            transition-all
+            duration-300
+            scale-100
+            z-50
+          `}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className={`
+                p-2 rounded-lg
+                bg-blue-500/10
+                ${theme.text.info}
+              `}>
+                <FolderPlus size={20} />
+              </div>
+              <h2 className={`text-xl font-semibold ${theme.text.primary}`}>
+                {from === "commonH" ? "Update Project" : "Create New Project"}
+              </h2>
             </div>
-            <h2 className={`text-xl font-semibold ${theme.text.primary}`}>
-              {from === "commonH" ? "Update Project" : "Create New Project"}
-            </h2>
+
+            <button
+              onClick={onClose}
+              className={`
+                p-1.5 rounded-lg
+                ${theme.text.muted}
+                hover:${theme.text.primary}
+                hover:bg-gray-200/20
+                dark:hover:bg-gray-800/50
+                transition-all
+                duration-200
+              `}
+            >
+              <X size={22} />
+            </button>
           </div>
 
-          <button
-            onClick={onClose}
-            className={`
-              p-1.5 rounded-lg
-              ${theme.text.muted}
-              hover:${theme.text.primary}
-              hover:bg-gray-200/20
-              dark:hover:bg-gray-800/50
-              transition-all
-              duration-200
-            `}
-          >
-            <X size={22} />
-          </button>
-        </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Project Name */}
+            <div>
+              <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
+                Project Name <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <FileText className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Enter project name"
+                  value={projectData.title}
+                  onChange={handleChange}
+                  className={`
+                    w-full pl-10 pr-4 py-2.5
+                    ${theme.input.input}
+                    transition-all
+                    duration-200
+                  `}
+                />
+              </div>
+            </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Project Name */}
-          <div>
-            <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
-              Project Name <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <FileText className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
-              <input
-                type="text"
-                name="title"
-                placeholder="Enter project name"
-                value={projectData.title}
+            {/* Description */}
+            <div>
+              <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                rows="4"
+                name="description"
+                placeholder="Enter project description"
+                value={projectData.description}
                 onChange={handleChange}
                 className={`
-                  w-full pl-10 pr-4 py-2.5
-                  ${theme.input.input}
+                  w-full px-4 py-2.5
+                  ${theme.input.textarea}
                   transition-all
                   duration-200
+                  min-h-[100px]
                 `}
               />
             </div>
-          </div>
 
-          {/* Description */}
-          <div>
-            <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
-              Description <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              rows="4"
-              name="description"
-              placeholder="Enter project description"
-              value={projectData.description}
-              onChange={handleChange}
-              className={`
-                w-full px-4 py-2.5
-                ${theme.input.textarea}
-                transition-all
-                duration-200
-                min-h-[100px]
-              `}
-            />
-          </div>
+            {/* Dates */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
+                  Start Date <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
+                  <input
+                    type="date"
+                    min={from !== "commonH" ? new Date().toISOString().split("T")[0] : undefined}
+                    name="startDate"
+                    value={projectData.startDate}
+                    onChange={handleChange}
+                    className={`
+                      w-full pl-10 pr-4 py-2.5
+                      ${theme.input.input}
+                      transition-all
+                      duration-200
+                    `}
+                  />
+                </div>
+              </div>
 
-          {/* Dates */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
-                Start Date <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
-                <input
-                  type="date"
-                  min={from !== "commonH" ? new Date().toISOString().split("T")[0] : undefined}
-                  name="startDate"
-                  value={projectData.startDate}
-                  onChange={handleChange}
-                  className={`
-                    w-full pl-10 pr-4 py-2.5
-                    ${theme.input.input}
-                    transition-all
-                    duration-200
-                  `}
-                />
+              <div>
+                <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
+                  Deadline <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
+                  <input
+                    type="date"
+                    name="deadline"
+                    value={projectData.deadline}
+                    onChange={handleChange}
+                    min={projectData.startDate}
+                    className={`
+                      w-full pl-10 pr-4 py-2.5
+                      ${theme.input.input}
+                      transition-all
+                      duration-200
+                    `}
+                  />
+                </div>
               </div>
             </div>
 
+            {/* Status */}
             <div>
               <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
-                Deadline <span className="text-red-500">*</span>
+                Status <span className="text-red-500">*</span>
               </label>
-              <div className="relative">
-                <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
-                <input
-                  type="date"
-                  name="deadline"
-                  value={projectData.deadline}
-                  onChange={handleChange}
-                  min={projectData.startDate}
-                  className={`
-                    w-full pl-10 pr-4 py-2.5
-                    ${theme.input.input}
-                    transition-all
-                    duration-200
-                  `}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div>
-            <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
-              Status <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="status"
-              value={projectData.status}
-              onChange={handleChange}
-              className={`
-                w-full px-4 py-2.5
-                ${theme.input.select}
-                transition-all
-                duration-200
-                cursor-pointer
-                appearance-none
-                bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E')]
-                bg-no-repeat
-                bg-[length:20px]
-                bg-[right_12px_center]
-              `}
-            >
-              <option value="">Select status</option>
-              <option value="Planning">Planning</option>
-              <option value="Active">Active</option>
-              <option value="On Hold">On Hold</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </div>
-
-          {/* Footer Buttons */}
-          <div className="flex items-center gap-3 pt-4 border-t border-gray-700/50">
-            <button
-              type="button"
-              onClick={CleareProjectData}
-              className={`
-                px-6 py-2.5
-                rounded-lg
-                ${theme.button.secondary}
-                ${theme.text.primary}
-                transition-all
-                duration-200
-                cursor-pointer
-                hover:scale-[1.02]
-                active:scale-[0.98]
-              `}
-            >
-              Clear
-            </button>
-
-            {loading ? (
-              <button
-                disabled
+              <select
+                name="status"
+                value={projectData.status}
+                onChange={handleChange}
                 className={`
-                  flex-1 flex items-center justify-center gap-2
-                  px-6 py-2.5
-                  rounded-lg
-                  bg-blue-600/50
-                  text-white
-                  cursor-not-allowed
-                `}
-              >
-                <span className="border-2 border-t-transparent border-white w-5 h-5 rounded-full animate-spin"></span>
-                <span>{from === "commonH" ? "Updating..." : "Creating..."}</span>
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={from === "commonH" && !isUpdate}
-                className={`
-                  flex-1 flex items-center justify-center gap-2
-                  px-6 py-2.5
-                  rounded-lg
-                  text-white
+                  w-full px-4 py-2.5
+                  ${theme.input.select}
                   transition-all
                   duration-200
-                  ${(from === "commonH" && !isUpdate)
-                    ? "bg-blue-600/40 cursor-not-allowed opacity-60"
-                    : `${theme.button.primary} hover:scale-[1.02] active:scale-[0.98]`
-                  }
+                  cursor-pointer
+                  appearance-none
+                  bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E')]
+                  bg-no-repeat
+                  bg-[length:20px]
+                  bg-[right_12px_center]
                 `}
               >
-                <Save size={18} />
-                {from === "commonH" ? "Update Project" : "Create Project"}
+                <option value="">Select status</option>
+                <option value="Planning">Planning</option>
+                <option value="Active">Active</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="flex items-center gap-3 pt-4 border-t border-gray-700/50">
+              <button
+                type="button"
+                onClick={CleareProjectData}
+                className={`
+                  px-6 py-2.5
+                  rounded-lg
+                  ${theme.button.secondary}
+                  ${theme.text.primary}
+                  transition-all
+                  duration-200
+                  cursor-pointer
+                  hover:scale-[1.02]
+                  active:scale-[0.98]
+                `}
+              >
+                Clear
               </button>
-            )}
-          </div>
-        </form>
+
+              {loading ? (
+                <button
+                  disabled
+                  className={`
+                    flex-1 flex items-center justify-center gap-2
+                    px-6 py-2.5
+                    rounded-lg
+                    bg-blue-600/50
+                    text-white
+                    cursor-not-allowed
+                  `}
+                >
+                  <span className="border-2 border-t-transparent border-white w-5 h-5 rounded-full animate-spin"></span>
+                  <span>{from === "commonH" ? "Updating..." : "Creating..."}</span>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={from === "commonH" && !isUpdate}
+                  className={`
+                    flex-1 flex items-center justify-center gap-2
+                    px-6 py-2.5
+                    rounded-lg
+                    text-white
+                    transition-all
+                    duration-200
+                    ${(from === "commonH" && !isUpdate)
+                      ? "bg-blue-600/40 cursor-not-allowed opacity-60"
+                      : `${theme.button.primary} hover:scale-[1.02] active:scale-[0.98]`
+                    }
+                  `}
+                >
+                  <Save size={18} />
+                  {from === "commonH" ? "Update Project" : "Create Project"}
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };
 

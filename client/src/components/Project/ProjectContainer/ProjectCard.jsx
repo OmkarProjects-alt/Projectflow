@@ -14,7 +14,6 @@ const ProjectCard = ({ project, index }) => {
   const { users } = useUserStore();
 
   const getMembersWorkingOnProject = useMemo(() => {
-      console.log("my tasks", createdTasks, "and my users", users);
       return [
         ...new Set(
           createdTasks

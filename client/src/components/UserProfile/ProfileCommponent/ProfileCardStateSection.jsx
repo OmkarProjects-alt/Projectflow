@@ -57,6 +57,7 @@ const ProfileCardStateSection = ({
     <div className={`
       ${theme.card.primary}
       ${theme.card.hover}
+      ${theme.border}
       p-5
       rounded-xl
       transition-all

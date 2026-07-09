@@ -5,10 +5,11 @@ import StateSection from './StateSection'
 import AllTasksTable from './AllTasksTable'
 import { useTaskStore } from '../../../../store/tasksStore';
 import { Loader2 } from 'lucide-react'
+import TaskPageSkeleton from '../TaskPageSkeleton'
 
 const TaskPage = () => {
   const { theme } = useTheme();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   const tasks = useTaskStore((state) => state.MyTasks);
   const fetchMyTasks = useTaskStore((state) => state.FetchMyTasks);
@@ -28,24 +29,28 @@ const TaskPage = () => {
 
 
   // Loading State
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-100">
-        <Loader2 className={`h-12 w-12 ${theme.text.info} animate-spin`} />
-        <p className={`${theme.text.muted} text-sm mt-4`}>
-          Loading your tasks...
-        </p>
-      </div>
-    );
-  }
-
-  console.log("my all tasks", tasks);
+  // if (loading) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center min-h-100">
+  //       <Loader2 className={`h-12 w-12 ${theme.text.info} animate-spin`} />
+  //       <p className={`${theme.text.muted} text-sm mt-4`}>
+  //         Loading your tasks...
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="space-y-6">
-      <TaskHeader />
-      <StateSection tasks={allMyTasksStatus} />
-      <AllTasksTable tasks={tasks} />
+      {loading ? (
+        <TaskPageSkeleton />
+      ) : (
+        <>
+          <TaskHeader />
+          <StateSection tasks={allMyTasksStatus} />
+          <AllTasksTable tasks={tasks} />
+        </>
+      )}
     </div>
   )
 }

@@ -3,11 +3,17 @@ import { useTheme } from "../../../context/ThemeProvider";
 import { useTaskStore } from "../../../store/tasksStore";
 import { useProjectStore } from "../../../store/projectStore";
 import CommonCharter from "../../common/CommonCharter";
+import { Loader2 } from "lucide-react";
 
 const ProjectOverview = () => {
   const { theme } = useTheme();
   const tasks = useTaskStore((state) => state.MyTasks);
   const projects = useProjectStore((state) => state.MyProjects);
+
+  const TaskLoading = useTaskStore((state) => state.loading);
+  const ProjectLoading = useProjectStore((state) => state.loading);
+
+  const isLoading = TaskLoading || ProjectLoading;
 
   const total = projects.length;
   const hasProjects = projects.length > 0;
@@ -67,7 +73,15 @@ const ProjectOverview = () => {
       <h2 className={`text-xl font-semibold ${theme.text.primary} mb-4`}>
         Project Overview
       </h2>
-      <CommonCharter chartData={chartData} total={total} className={classes} />
+      
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center h-56 gap-4">
+          <Loader2 className={`h-8 w-8 ${theme.text.info} animate-spin`} />
+          <p className={`text-sm ${theme.text.muted}`}>Loading projects...</p>
+        </div>
+      ) : (
+        <CommonCharter chartData={chartData} total={total} className={classes} />
+      )}
     </div>
   );
 };

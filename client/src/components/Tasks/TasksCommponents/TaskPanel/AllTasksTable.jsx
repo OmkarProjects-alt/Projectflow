@@ -35,8 +35,6 @@ const AllTasksTable = ({ tasks }) => {
 
   const users = useUserStore((state) => state.users);
 
-  console.log("cheking user data format", users)
-
   useEffect(() => {
     const handleClick = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -80,7 +78,6 @@ const AllTasksTable = ({ tasks }) => {
         setLoadingMore(true);
         await fetchTasks(currentPage, TASKS_PER_PAGE);
       } catch (error) {
-        console.log(error?.response?.data?.message || error?.message);
         addMessage(error?.response?.data?.message || "Failed to load tasks");
       } finally {
         setLoadingMore(false);

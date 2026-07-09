@@ -7,6 +7,7 @@ import DeleteTaskConfirm from '../../../../common/DeleteTaskConfirm';
 import { updateStatus } from '../../../../../services/task.service';
 import { useError } from '../../../../../context/ErrorAndSuccessMsgContext';
 import { useProjectStore } from '../../../../../store/projectStore';
+import DeleteTaskBtn from '../../../../common/DeleteTaskBtn';
 
 const TaskFooter = ({ task, isFromAssignedTask }) => {
   const { theme } = useTheme();
@@ -16,7 +17,6 @@ const TaskFooter = ({ task, isFromAssignedTask }) => {
   const updateTask = useTaskStore((state) => state.updateTask);
   const updateProject = useProjectStore((state) => state.updateProject);
 
-  const [openConfirmModal, setOpenConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleUpdateState = async () => {
@@ -45,39 +45,12 @@ const TaskFooter = ({ task, isFromAssignedTask }) => {
 
   return (
     <>
-      {openConfirmModal && (
-        <DeleteTaskConfirm 
-          open={openConfirmModal}
-          onClose={() => setOpenConfirm(!openConfirmModal)}
-          taskId={taskId}
-        />
-      )}
+      
       
       {!isFromAssignedTask && (
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
           {/* Delete Button */}
-          <button 
-            onClick={() => setOpenConfirm(!openConfirmModal)}
-            className={`
-              flex items-center justify-center gap-2
-              px-5 py-2.5
-              w-full sm:w-auto
-              rounded-xl
-              ${theme.button.danger}
-              ${theme.text.primary}
-              border border-red-500/30
-              transition-all
-              duration-200
-              hover:scale-[1.02]
-              hover:shadow-lg
-              hover:shadow-red-500/20
-              active:scale-[0.98]
-              cursor-pointer
-            `}
-          >
-            <Trash2 size={18} />
-            Delete Task
-          </button>
+          <DeleteTaskBtn taskId={task.tid} />
 
           {/* Mark as Complete Button */}
           {task?.status === "Review" && (

@@ -6,17 +6,18 @@ module.exports = function (io) {
 
         console.log("Socket Connected:", socket.id);
 
+        const broadcastUserStatus = (userId, isOnline) => {
+            io.emit("user:status", { userId, isOnline });
+        };
+
         socket.on("register", ({ userId }) => {
 
-            if (!socketMap.has(userId)) {
-                socketMap.set(userId, new Set());
-            }
-
+            if (!socketMap.has(userId)) socketMap.set(userId, new Set());
             socketMap.get(userId).add(socket.id);
 
-            console.log(
-                `User ${userId} registered`
-            );
+            if (socketMap.get(userId).size === 1) {
+                broadcastUserStatus(userId, true);
+            }
 
         }); 
 
@@ -45,6 +46,7 @@ module.exports = function (io) {
 
                 if (sockets.size === 0) {
                     socketMap.delete(userId);
+                    broadcastUserStatus(userId, false);
                 }
 
             }

@@ -6,6 +6,7 @@ const {
     inviteMembers, 
     removeMember,
     getUserAssignedProjects,
+    getAssignedProjects
 } = require("../controller/project.controller")
 const pool = require('../config/DbConnection');
 
@@ -190,54 +191,7 @@ Router.patch('/:id', authMiddleware,
 );
 
 Router.get("/assigned", authMiddleware,
-    asyncHandler(async (req, res) => {
-
-        const userId = req.user.uid;
-
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10
-
-        const offset = (page - 1) * limit;
-
-        const totalResult = await pool.query(`
-                SELECT COUNT(DISTINCT p.pid) AS total
-                FROM projects P
-                JOIN tasks t
-                    ON p.pid = t.project_id
-                WHERE t.assigned_to = $1
-            `,
-            [userId]
-        );
-
-        const total = Number(totalResult.rows[0].total);
-
-        const projects = await pool.query(
-            `
-            SELECT DISTINCT p.*
-            FROM projects p
-            JOIN tasks t
-            ON t.project_id = p.pid
-            WHERE t.assigned_to = $1
-            ORDER BY p.created_at DESC
-            LIMIT $2
-            OFFSET $3
-            `,
-            [userId, limit, offset]
-        );
-
-        res.status(200).json({
-            success: true,
-            projects: projects.rows,
-            pagination: {
-                page,
-                limit,
-                total,
-                totalPages: Math.ceil(total / limit),
-                hasNext: page * limit < total,
-                hasPrev: page > 1,
-            }
-        });
-    })
+    asyncHandler(getAssignedProjects)
 );
 
 Router.get(

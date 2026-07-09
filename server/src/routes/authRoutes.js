@@ -6,59 +6,19 @@ const bcrypt = require("bcryptjs");
 const generateToken = require('../utils/generateToken');
 const { sendMail, sendMailAsync, sendMailWithRetry } = require('../utils/SendMail');
 const authMiddleware = require('../middleware/authMiddleware');
+const { 
+    logoutUser,
+    verifySession,
+    loginUser,
+    registerUser,
+} = require("../controller/auth.controller");
 
 Router.post('/register', 
-    aysncHandler(async (req, res) => {
-        const { name, email, password } = req.body;
-
-        if(!name || !email || !password) {
-            console.log("my fields", name, email, password ,"and", req.body)
-            res.status(400)
-            throw new Error("All filed are required");
-        }
-
-        const userExist = await pool.query(
-            "SELECT * FROM users WHERE email = $1",
-            [email],
-        );
-
-        if (userExist.rows.length > 0 && userExist.rows[0].is_verified) {
-            res.status(409)
-            throw new Error("User already exist, please try to login");
-        }
-
-        const hashPassword = await bcrypt.hash(password, 12);
-
-        let verified = false;
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
-        const hash = await bcrypt.hash("12345678", 10);
-        console.log("my otp", otp, "and", hash);
-        const result = await sendMailWithRetry(email, "Your OTP Code", otp, 2);
-
-        if(!result.status) {
-            res.status(503);
-            throw new Error(result.userMessage || "We couldn't send the verification code. Please check your email and try again.");
-        };
-
-        if(userExist.rows.length === 0) {
-            await pool.query(
-                "INSERT INTO users (name ,email, password, is_verified, otp, otp_expires_at) VALUES ($1, $2, $3, $4, $5, $6)",
-                [name, email, hashPassword, verified, otp, otpExpiresAt]
-            );
-        } else {
-            await pool.query(
-                "UPDATE users SET name = $1, password = $2, otp = $3, otp_expires_at = $4 WHERE email = $5",
-                [name, hashPassword, otp, otpExpiresAt, email]
-            )
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Verification code sent! Check your email inbox or spam folder."
-        });
-    })
+    aysncHandler(registerUser)
 );
+
+
+Router.post("/logout", authMiddleware, aysncHandler(logoutUser));
 
 Router.post('/verify-otp',
     aysncHandler(async (req, res) => {
@@ -152,58 +112,14 @@ Router.post('/re-send-otp',
     })
 )
 
+Router.get(
+    "/me",
+    authMiddleware,
+    aysncHandler(verifySession)
+);
+
 Router.post('/login', 
-    aysncHandler(async (req, res) => {
-        const { email, password } = req.body;
-
-        if(!email || !password) {
-            res.status(400)
-            throw new Error("All filed are required");
-        }
-
-        const userExist = await pool.query(
-            "SELECT * FROM users WHERE email = $1",
-            [email],
-        );
-
-        if(userExist.rows.length === 0) {
-            res.status(401);
-            throw new Error("User not exist, Please try to register");
-        }
-
-        let User = userExist.rows[0];
-
-        if(!User.is_verified) {
-            res.status(401);
-            throw new Error("User is not verified by otp, Please register first");
-        }
-
-        const isMatch = await bcrypt.compare(
-            password,
-            User.password,
-        );
-
-        if(!isMatch) {
-            res.status(401);
-            throw new Error("User not exist, Please try to register");
-        }
-
-        await generateToken(res, User.uid);
-
-        let userData = {
-            name: User.name,
-            email: User.email,
-            role: User.role,
-            uid: User.uid,
-            created_at: User.created_at,
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "User LogedIn succesfuly",
-            User: userData
-        });
-    })
+    aysncHandler(loginUser)
 );
 
 Router.post('/verify-session', authMiddleware,

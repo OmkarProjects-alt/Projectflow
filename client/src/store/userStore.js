@@ -2,11 +2,21 @@ import { create } from "zustand";
 import { getUsers } from "../services/users.service";
 import { removeMember } from "../services/project.service"
 
-export const useUserStore = create((set) => ({
+export const useUserStore = create((set, get) => ({
     users: [],
     loading: false,
     messages: { isMessage: false,  String: "", success: false, },
     removingMember: false,
+
+    onlineUsers: {},
+    setUserStatus: (uid, isOnline) => set(state => ({
+        onlineUsers: {
+            ...state.onlineUsers,
+            [uid]: isOnline,
+        },
+    })),
+
+    usersCache: {},
 
     pagination: {
         page: 1,
@@ -19,43 +29,76 @@ export const useUserStore = create((set) => ({
 
 
     fetchUsers: async (
-       page = 1,
-       limit = 10,
-       search = "",
-       sort = "all"
+        page = 1,
+        limit = 10,
+        search = "",
+        sort = "all",
+        projectId = ""
     ) => {
 
-        set({
-            loading: true,
-        });
+        const key = `${page}-${limit}-${search}-${sort}-${projectId}`;
+
+        const cache = get().usersCache[key];
+
+        if (cache) {
+            set({
+                users: cache.users,
+                pagination: cache.pagination,
+                loading: false,
+            });
+            return;
+        }
+
+        set({ loading: true });
 
         try {
 
-            const result =
-                await getUsers(page, limit, search, sort);
+            const result = await getUsers(
+                page,
+                limit,
+                search,
+                sort,
+                projectId
+            );
 
-            if(result.data.success){
+            if (result.data.success) {
 
-                set({
+                set((state) => ({
                     users: result.data.users,
                     pagination: result.data.pagination,
-                    loading:false
-                });
+                    loading: false,
+
+                    usersCache: {
+                        ...state.usersCache,
+                        [key]: {
+                            users: result.data.users,
+                            pagination: result.data.pagination,
+                        },
+                    },
+                }));
 
             }
 
-        } catch(error){
+        } catch (error) {
 
             set({
-                loading:false,
-                messages:{
-                    isMessage:true,
-                    String:error?.response?.data?.error || error.message
-                }
+                loading: false,
+                messages: {
+                    isMessage: true,
+                    String:
+                        error?.response?.data?.error ||
+                        error.message,
+                },
             });
 
         }
 
+    },
+
+    clearUsersCache: () => {
+        set({
+            usersCache: {},
+        });
     },
 
 

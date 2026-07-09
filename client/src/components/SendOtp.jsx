@@ -33,7 +33,6 @@ const SendOtp = ({ email, SendMessage, onCloseOtp }) => {
 
     const handleVerify = async() => {
         const OTP = otp.join("");
-        console.log("My otp", OTP)
         if(OTP.toString().length !== 6) {
             SendMessage({ message:"Please enter a valid 6-digit OTP", success:false} );
             return;
@@ -53,7 +52,6 @@ const SendOtp = ({ email, SendMessage, onCloseOtp }) => {
             }
             
         } catch (error) {
-            console.log(error?.response?.data?.message || error.message);
             SendMessage({ message:error?.response?.data?.message || error.message, success: false })
         } finally {
             setLoading(false);

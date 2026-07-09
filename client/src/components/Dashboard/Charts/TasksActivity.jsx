@@ -13,10 +13,66 @@ import {
   Area,
   ComposedChart,
 } from "recharts";
-import { CalendarDays, TrendingUp, TrendingDown, Activity, CheckCircle, Clock } from "lucide-react";
+import { CalendarDays, TrendingUp, TrendingDown, Activity, CheckCircle, Clock, Loader2 } from "lucide-react";
+
+// Skeleton Components
+const StatsSkeleton = ({ theme }) => (
+  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+    {[1, 2, 3, 4].map((i) => (
+      <div key={i} className={`p-2 rounded-lg border ${theme.table.divider} animate-pulse`}>
+        <div className="h-3 w-16 rounded bg-gray-700 mb-1.5" />
+        <div className="h-6 w-12 rounded bg-gray-700" />
+      </div>
+    ))}
+  </div>
+);
+
+const ChartSkeleton = ({ theme }) => (
+  <div className="w-full h-60 sm:h-72 flex items-center justify-center animate-pulse">
+    <div className="w-full h-full rounded-lg bg-gray-700/30 flex flex-col items-center justify-center gap-4">
+      <div className="flex items-center gap-4 w-3/4">
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+      </div>
+      <div className="flex items-center gap-4 w-3/4">
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+      </div>
+      <div className="flex items-center gap-4 w-3/4">
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+      </div>
+      <div className="flex items-center gap-4 w-3/4">
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+      </div>
+      <div className="flex items-center gap-4 w-3/4">
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+        <div className="h-2 w-full rounded bg-gray-700" />
+      </div>
+    </div>
+  </div>
+);
 
 const TasksActivity = () => {
   const tasks = useTaskStore((state) => state.MyTasks);
+  const TaskLoading = useTaskStore((state) => state.loading);
+
   const { theme } = useTheme();
   const [filter, setFilter] = useState("7");
 
@@ -56,8 +112,6 @@ const TasksActivity = () => {
         (task) => task.created_at?.split("T")[0] === fullDate
       ).length;
 
-      // For completed tasks, we check if status is completed and use Assigned_at as fallback
-      // since updated_at doesn't exist in the data
       const completed = tasks.filter(
         (task) =>
           task.status?.toLowerCase() === "completed" &&
@@ -171,6 +225,60 @@ const TasksActivity = () => {
     if (stats.completionRate >= 40) return <Activity className="h-4 w-4 text-amber-400" />;
     return <TrendingDown className="h-4 w-4 text-red-400" />;
   };
+
+  // Loading state with skeleton
+  if (TaskLoading) {
+    return (
+      <div className={`
+        ${theme.card.primary}
+        ${theme.table.divider}
+        border
+        rounded-xl
+        p-5
+        h-full
+        min-h-95
+        transition-all
+        duration-300
+      `}>
+        {/* Header Skeleton */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-gray-700/50 h-10 w-10 animate-pulse" />
+            <div>
+              <div className="h-6 w-32 rounded bg-gray-700 animate-pulse" />
+              <div className="h-3 w-40 rounded bg-gray-700 animate-pulse mt-1" />
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 rounded-lg bg-white/5">
+                <div className="h-4 w-16 rounded bg-gray-700 animate-pulse" />
+                <div className="w-px h-4 bg-gray-700/50" />
+                <div className="h-4 w-16 rounded bg-gray-700 animate-pulse" />
+              </div>
+              <div className="h-9 w-24 rounded-lg bg-gray-700 animate-pulse" />
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Skeleton */}
+        <StatsSkeleton theme={theme} />
+
+        {/* Chart Skeleton */}
+        <ChartSkeleton theme={theme} />
+
+        {/* Footer Skeleton */}
+        <div className={`mt-3 pt-2 border-t ${theme.table.divider} flex flex-wrap items-center justify-between gap-2`}>
+          <div className="flex items-center gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-3 w-16 rounded bg-gray-700 animate-pulse" />
+            ))}
+          </div>
+          <div className="h-3 w-24 rounded bg-gray-700 animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`

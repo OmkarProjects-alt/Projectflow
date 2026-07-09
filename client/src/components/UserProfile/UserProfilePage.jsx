@@ -11,6 +11,7 @@ import {
   getCreatedProjectsOfUser,
   getAssignedProjectsOfUser,
 } from "../../services/project.service";
+import UserProfilePageSkeleton from "./UserProfilePageSkeleton";
 
 const UserProfilePage = () => {
   const { userId } = useParams();
@@ -22,7 +23,7 @@ const UserProfilePage = () => {
 
   const { addMessage } = useError();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true
   const [userCreatedProjects, setUserCreatedProjects] = useState([]);
   const [userAssignedProjects, setUserAssignedProjects] = useState([]);
 
@@ -41,7 +42,7 @@ const UserProfilePage = () => {
       setCurrentUser(false);
       setUser(getUser[0]);
     }
-  }, [userId, userData]);
+  }, [userId, userData, users]);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -49,13 +50,6 @@ const UserProfilePage = () => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-
-        // const [createdRes, assignedRes] =
-        //     await Promise.all([
-        //       getCreatedProjectsOfUser(user.uid),
-        //       getAssignedProjectsOfUser(user.uid),
-        //     ]);
-
         const assignedRes = await getAssignedProjectsOfUser(user.uid);
 
         if (!isCurrentUser) {
@@ -69,7 +63,6 @@ const UserProfilePage = () => {
         }
 
         if (assignedRes?.data?.success) {
-          console.log("comming assinged data", assignedRes.data.projects, "and", userAssignedProjects)
           setUserAssignedProjects(assignedRes.data.projects || []);
         } else {
           setUserAssignedProjects([])
@@ -82,23 +75,28 @@ const UserProfilePage = () => {
     };
 
     fetchProjects();
-  }, [user?.uid, user]);
+  }, [user?.uid, user, isCurrentUser, projects, addMessage]);
 
+  // Show skeleton while loading
   if (loading) {
-    return (
-      <div className="bg-[#0b1423e4] border border-gray-800 rounded-xl p-6">
-        <div className="animate-pulse">
-          <div className="h-6 w-40 bg-neutral-700 rounded mb-6" />
+    return <UserProfilePageSkeleton />;
+  }
 
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-12 bg-neutral-800 rounded-lg mb-3" />
-          ))}
-        </div>
+  // If no user found, show a message
+  if (!user) {
+    return (
+      <div className={`flex flex-col items-center justify-center p-12 ${theme.card.primary} rounded-xl`}>
+        <p className={`text-lg ${theme.text.primary}`}>User not found</p>
+        <p className={`text-sm ${theme.text.muted} mt-2`}>The user you're looking for doesn't exist.</p>
+        <button
+          onClick={() => navigate(-1)}
+          className={`mt-4 px-6 py-2 rounded-lg ${theme.button.primary} text-white`}
+        >
+          Go Back
+        </button>
       </div>
     );
   }
-
-  console.log("Cheking user data", userAssignedProjects);
 
   return (
     <div className="flex flex-col p-3">

@@ -14,6 +14,7 @@ const taskRoute = require('./src/routes/taskRoutes');
 const userRoute = require('./src/routes/userRoute');
 const activities = require("./src/routes/activity.route");
 const notificationRoute = require("./src/routes/notification.routes");
+const searchRoute = require("./src/routes/search.route");
 
 
 const server = http.createServer(app);
@@ -77,6 +78,7 @@ app.use('/taskflow/project', projectRoute);
 app.use('/taskflow/task', taskRoute);
 app.use('/taskflow/users', userRoute);
 app.use('/taskflow/activities', activities);
+app.use("/taskflow/search", searchRoute);
 
 app.use(
     "/taskflow/notification",

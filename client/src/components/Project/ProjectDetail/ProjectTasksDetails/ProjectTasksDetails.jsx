@@ -4,6 +4,7 @@ import ProjectTasksTable from './ProjectTasksTable'
 import ProjectOverview from './ProjectOverview';
 import TeamMembers from './TeamMembers';
 import { useTaskStore } from '../../../../store/tasksStore';
+import { useError } from '../../../../context/ErrorAndSuccessMsgContext';
 
 const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
   const { theme } = useTheme();
@@ -11,9 +12,9 @@ const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
   const myProjectTasks = useTaskStore((state) => state.createdTasks);
   const FetchMyTasks = useTaskStore((state) => state.FetchMyTasks);
 
-  const [isFetching, setIsFetching] = useState(false);
+  const { addMessage } = useError();
 
-  console.log("my all task my project", myProjectTasks);
+  const [isFetching, setIsFetching] = useState(false);
 
   const IsTaskAlreadyExist = myProjectTasks.some(
     (task) => String(task?.project_id) === String(project.pid)
@@ -32,7 +33,7 @@ const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
 
         
       } catch (error) {
-        console.error("Error fetching tasks:", error);
+        addMessage("Network problem ")
       } finally {
         setIsFetching(false);
       }

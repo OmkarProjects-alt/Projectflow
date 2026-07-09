@@ -6,7 +6,8 @@ const fetchUsers = async (
     page,
     limit,
     search,
-    sort
+    sort,
+    projectId
 ) => {
 
     const offset = (page - 1) * limit;
@@ -14,7 +15,6 @@ const fetchUsers = async (
     let orderBy = "u.name ASC";
 
     switch (sort) {
-
         case "newer":
             orderBy = "u.created_at DESC";
             break;
@@ -24,7 +24,7 @@ const fetchUsers = async (
             break;
 
         case "role":
-            orderBy = "u.role DESC, u.name ASC";
+            orderBy = "u.role ASC, u.name ASC";
             break;
 
         default:
@@ -33,64 +33,23 @@ const fetchUsers = async (
 
     const values = [
         userId,
-        `%${search}%`,
-        limit,
-        offset
+        `%${search}%`
     ];
 
-    const totalResult = await pool.query(
-        `
-        SELECT COUNT(*)::int AS total
-        FROM (
-            SELECT DISTINCT
-                u.uid
-            FROM users u
-            JOIN project_members pm
-                ON pm.user_id = u.uid
+    let projectCondition = "";
 
-            WHERE
-                pm.project_id IN (
+    if (projectId && projectId !== "all") {
 
-                    SELECT pid
-                    FROM projects
-                    WHERE created_by = $1
+        values.push(projectId);
 
-                    UNION
+        projectCondition = `
+            AND pm.project_id = $${values.length}
+        `;
 
-                    SELECT project_id
-                    FROM project_members
-                    WHERE user_id = $1
-                )
+    } else {
 
-            AND u.uid <> $1
-            AND u.is_verified = true
-
-            AND (
-                u.name ILIKE $2
-                OR u.email ILIKE $2
-            )
-
-        ) t
-        `,
-        values.slice(0,2)
-    );
-
-    const users = await pool.query(
-        `
-        SELECT DISTINCT
-            u.uid,
-            u.name,
-            u.email,
-            u.created_at,
-            u.role
-
-        FROM users u
-
-        JOIN project_members pm
-            ON pm.user_id = u.uid
-
-        WHERE
-            pm.project_id IN (
+        projectCondition = `
+            AND pm.project_id IN (
 
                 SELECT pid
                 FROM projects
@@ -101,10 +60,76 @@ const fetchUsers = async (
                 SELECT project_id
                 FROM project_members
                 WHERE user_id = $1
+
+            )
+        `;
+
+    }
+
+    // ---------- TOTAL ----------
+
+    const totalResult = await pool.query(
+        `
+        SELECT COUNT(*)::int AS total
+
+        FROM (
+            SELECT DISTINCT
+                u.uid
+
+            FROM users u
+
+            JOIN project_members pm
+                ON pm.user_id = u.uid
+
+            WHERE
+                u.uid <> $1
+
+            AND
+                u.is_verified = true
+
+            ${projectCondition}
+
+            AND (
+                u.name ILIKE $2
+                OR u.email ILIKE $2
             )
 
-        AND u.uid <> $1
-        AND u.is_verified = true
+        ) t
+        `,
+        values
+    );
+
+    // ---------- USERS ----------
+
+    const usersValues = [
+        ...values,
+        limit,
+        offset
+    ];
+
+    const users = await pool.query(
+        `
+        SELECT DISTINCT
+
+            u.uid,
+            u.name,
+            u.email,
+            u.created_at,
+            u.user_role
+
+        FROM users u
+
+        JOIN project_members pm
+            ON pm.user_id = u.uid
+
+        WHERE
+
+            u.uid <> $1
+
+        AND
+            u.is_verified = true
+
+        ${projectCondition}
 
         AND (
             u.name ILIKE $2
@@ -113,38 +138,28 @@ const fetchUsers = async (
 
         ORDER BY ${orderBy}
 
-        LIMIT $3
-        OFFSET $4
+        LIMIT $${usersValues.length - 1}
+        OFFSET $${usersValues.length}
         `,
-        values
+        usersValues
     );
 
     const total = totalResult.rows[0].total;
 
     return {
-
         success: true,
 
         users: users.rows,
 
         pagination: {
-
             page,
-
             limit,
-
             total,
-
             totalPages: Math.ceil(total / limit),
-
             hasNext: page < Math.ceil(total / limit),
-
             hasPrev: page > 1,
-
         },
-
     };
-
 };
 
 const searchMembersService = async (query, projectId) => {
@@ -156,7 +171,7 @@ const searchMembersService = async (query, projectId) => {
 
     const result = await pool.query(
         `
-        SELECT DISTINCT
+        SELECT
             u.uid,
             u.name,
             u.email,
@@ -164,27 +179,21 @@ const searchMembersService = async (query, projectId) => {
 
         FROM users u
 
-        LEFT JOIN project_members pm
-            ON pm.user_id = u.uid
-
-        LEFT JOIN projects p
-            ON p.pid = pm.project_id
-
         WHERE
             u.is_verified = true
 
         AND NOT EXISTS (
             SELECT 1
-            FROM project_members current_pm
-            WHERE current_pm.project_id = $2
-              AND current_pm.user_id = u.uid
+            FROM project_members pm
+            WHERE
+                pm.project_id = $2
+                AND pm.user_id = u.uid
         )
 
         AND (
             u.name ILIKE $1
             OR u.email ILIKE $1
             OR COALESCE(u.user_role, '') ILIKE $1
-            OR p.title ILIKE $1
         )
 
         ORDER BY
@@ -192,8 +201,7 @@ const searchMembersService = async (query, projectId) => {
                 WHEN u.name ILIKE $1 THEN 1
                 WHEN u.email ILIKE $1 THEN 2
                 WHEN COALESCE(u.user_role, '') ILIKE $1 THEN 3
-                WHEN p.title ILIKE $1 THEN 4
-                ELSE 5
+                ELSE 4
             END,
             u.name ASC
 

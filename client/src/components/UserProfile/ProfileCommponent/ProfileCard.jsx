@@ -65,6 +65,7 @@ const ProfileCard = ({ userAssignedProjects, user }) => {
       {!hasData && (
         <div className={`
           ${theme.card.secondary}
+          ${theme.border}
           p-6
           mt-4
           rounded-xl

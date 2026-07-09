@@ -27,7 +27,6 @@ const ErrorContextProvider = ({ children }) => {
                 messageObj
             ]
         );
-        console.log(messages, "cheking my error")
     };
 
     const clearMessage = () => {

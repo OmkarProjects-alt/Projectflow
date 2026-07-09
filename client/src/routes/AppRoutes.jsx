@@ -39,12 +39,12 @@ function App() {
                       element={ <Auth />}
                     />
 
-                <Route
-                  path='/projectflow'
-                  element={
-                    <AppLayout/>
-                  }
-                >
+                    <Route
+                      path='/projectflow'
+                      element={
+                        <AppLayout/>
+                      }
+                    >
                     <Route 
                       path='dashboard'
                       element = { 

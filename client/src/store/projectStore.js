@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { getProjects, getAssignedProject } from '../services/project.service'
 
-export const useProjectStore = create((set) => ({
+export const useProjectStore = create((set, get) => ({
 
     // My project, project's that created by me
     MyProjects: [],
@@ -12,7 +12,7 @@ export const useProjectStore = create((set) => ({
     fetchProjects: async () => {
         try {
             set({
-                loading: false,
+                loading: true,
                 messages: { message: ""},
             });
 
@@ -59,6 +59,7 @@ export const useProjectStore = create((set) => ({
 
     // assigned Project that project are project which task are assigned to me by someones project
     assignedProject: [],
+    assignedProjectLoaded: false,
     assignedPagination: {
         page: 1,
         limit: 10,
@@ -73,11 +74,16 @@ export const useProjectStore = create((set) => ({
         limit = 10,
     ) => {
         try {
-            const result = await getAssignedProject(page, limit);
+
+            if(get().assignedProjectLoaded === true) {
+                return;
+            }
+            const result = await getAssignedProject();
+            console.log("my all projects that are assigned form project store" , result?.data?.projects);
             if(result?.data?.success) {
                 set({
                     assignedProject: result?.data?.projects,
-
+                    assignedProjectLoaded: true,
                     assignedPagination: result.data.pagination
                 })
                 console.log("my all projects" , result?.data?.projects);

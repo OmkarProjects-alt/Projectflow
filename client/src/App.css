@@ -15,3 +15,7 @@
 button {
   cursor: pointer;
 }
+
+.zIndex {
+  z-index: 500000;
+}

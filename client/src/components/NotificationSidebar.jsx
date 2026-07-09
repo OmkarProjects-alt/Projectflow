@@ -17,6 +17,7 @@ import { useSocket } from "../context/SocketContext";
 import { useState } from "react";
 import gsap from "gsap";
 import { useError } from "../context/ErrorAndSuccessMsgContext";
+import ModalPortal from "./common/ModalPortal";
 
 export default function NotificationSidebar({
     open,
@@ -98,12 +99,10 @@ export default function NotificationSidebar({
     };
 
     const handleAcceptInvite = async (nid, projectId, e) => {
-        console.log("accept", nid)
         e.stopPropagation();
         setProcessingInvites(prev => ({ ...prev, [nid]: 'accept' }));
         try {
             const result = await acceptProjectInvite(nid, projectId);
-                console.log("result all accept", result)
             if (result?.data?.success) {
                 addMessage(result?.data?.message || "Successfully joined the project!", true);
                 removeNotification(nid);
@@ -126,7 +125,6 @@ export default function NotificationSidebar({
         setProcessingInvites(prev => ({ ...prev, [nid]: 'reject' }));
         try {
             const result = await rejectProjectInvite(nid);
-            console.log("Result Data", result);
             if (result?.data?.success) {
                 addMessage(result?.message || "Invitation declined", true);
                 removeNotification(nid);
@@ -134,14 +132,11 @@ export default function NotificationSidebar({
                 addMessage(result?.message || "Failed to decline invitation");
             }
         } catch (error) {
-            console.log("error", error?.message)
             addMessage(error?.response?.data?.message || "Failed to decline invitation");
         } finally {
             setProcessingInvites(prev => ({ ...prev, [nid]: null }));
         }
     };
-
-    console.log("my all not", notifications)
 
     const isInvitation = (notification) => {
         return notification?.type?.toLowerCase() === 'project_invite';
@@ -158,7 +153,7 @@ export default function NotificationSidebar({
     };
 
     return (
-        <>
+       <ModalPortal>
             <div
                 onClick={handleClose}
                 className={`
@@ -433,6 +428,6 @@ export default function NotificationSidebar({
                     </div>
                 )}
             </div>
-        </>
+       </ModalPortal>
     );
 }

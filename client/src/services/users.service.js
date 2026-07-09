@@ -4,9 +4,10 @@ export const getUsers = (
     page = 1,
     limit = 10,
     search,
-    sort
+    sort,
+    projectId
 ) => {
-   return api.get(`/users?page=${page}&limit=${limit}&search=${search}&sort=${sort}`);
+   return api.get(`/users?page=${page}&limit=${limit}&search=${search}&sort=${sort}&projectId=${projectId}`);
 }
 
 export const updateUserProfile = (data) => {

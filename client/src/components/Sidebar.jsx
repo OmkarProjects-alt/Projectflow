@@ -3,6 +3,10 @@ import { useUserContext } from "../context/UserContext";
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeProvider";
+import LogOutConfirmModal from "./common/LogOutConfirmModal";
+import { useNavigate } from "react-router-dom";
+import { useError } from "../context/ErrorAndSuccessMsgContext";
+import { useState } from "react";
 
 import {
   LayoutDashboard,
@@ -15,7 +19,31 @@ import {
 } from "lucide-react";
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
-  const { userData } = useUserContext();
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  
+  const { userData, logoutUser } = useUserContext();
+
+  const { addMessage } = useError();
+
+   const handleLogout = async () => {
+    setIsLoading(true);
+    try {
+      await logoutUser();
+      localStorage.clear();
+      sessionStorage.clear();
+      navigate('/login');
+    } catch (error) {
+      addMessage("Failed to Logout")
+    } finally {
+      setIsLoading(false);
+      setShowLogoutModal(false);
+    }
+  };
+
   const { dark, theme } = useTheme();
 
   const menuItems = [
@@ -44,11 +72,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
       label: "Team",
       icon: Users,
     },
-    {
-      path: "/projectflow/settings",
-      label: "Settings",
-      icon: Settings,
-    },
   ];
 
   return (
@@ -57,7 +80,16 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-sm transition-all duration-300"
+          className="fixed inset-0 bg-black/50 z-50 lg:hidden backdrop-blur-sm transition-all duration-300"
+        />
+      )}
+
+      {showLogoutModal && (
+        <LogOutConfirmModal
+          isOpen={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+          onConfirm={handleLogout}
+          isLoading={isLoading}
         />
       )}
 
@@ -69,7 +101,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
           w-64
           ${theme.layout.sidebar}
           ${theme.text.primary}
-          z-30
+          z-50 
           transform
           transition-transform
           duration-300
@@ -157,6 +189,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         <div className={`${theme.table.divider} p-3 space-y-3`}>
           {/* Logout Button */}
           <button
+            onClick={() => setShowLogoutModal(true)}
             className={`
               w-full
               flex

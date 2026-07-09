@@ -64,8 +64,21 @@ const getUserAssignedProjects = async (req, res) => {
 
 }
 
+const getAssignedProjects = async (req, res) => {
+
+    const userId = req.user.uid;
+
+    const projects = await fetchUserAssignedProjects(userId);
+
+    res.status(200).json({
+        success: true,
+        projects: projects.rows,
+    });
+}
+
 module.exports = {
     inviteMembers,
     removeMember,
-    getUserAssignedProjects
+    getUserAssignedProjects,
+    getAssignedProjects,
 };

@@ -19,8 +19,8 @@ export const updateProject = (projectId, UpdatedData) => {
     );
 };
 
-export const getAssignedProject = (page, limit) => {
-    return api.get(`/project/assigned?page=${page}&limit=${limit}`,
+export const getAssignedProject = () => {
+    return api.get(`/project/assigned`,
         {}
     )
 };

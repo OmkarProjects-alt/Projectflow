@@ -32,16 +32,19 @@ export const useTaskStore = create((set) => ({
 
     fetchMyTasksStatus: async () => {
         try {
+            set({ loading: true })
             const result = await getAllMyTasksStatus();
 
             if(result.data.success) {
                 set({
+                    loading:false,
                     allMyTasksStatus: result.data.status,
                     allMyStatusLoaded: true,
                 });
                 console.log("is data comming from backend status", result.data.status)
             }
         } catch (error) {
+            set({ loading: false })
             console.log("somthing wrong", error?.response?.data?.message || error.message);
         }
     },
@@ -52,7 +55,7 @@ export const useTaskStore = create((set) => ({
     ) => {
             try {
                 set({
-                    loading: false,
+                    loading: true,
                     messages: { String: ""},
                 });
     
@@ -76,6 +79,7 @@ export const useTaskStore = create((set) => ({
                         });
 
                         return {
+                            loading: false,
                             MyTasks: [...taskMap.values()],
                             MyTasksPagination: result.data.pagination,
                         };

@@ -8,6 +8,7 @@ import { useTheme } from "../../../context/ThemeProvider";
 const UpcomingDeadlines = () => {
   const { theme } = useTheme();
   const tasks = useTaskStore((state) => state.MyTasks);
+  const loading = useTaskStore((state) => state.loading);
 
   const UpCommingDeadLineTasks = useMemo(() => {
     return tasks.filter((task) => {

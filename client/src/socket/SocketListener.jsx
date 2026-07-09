@@ -4,6 +4,7 @@ import { useSocket } from "../context/SocketContext";
 import { useNotificationStore } from "../store/notificationStore";
 import { useActivityStore } from "../store/activityStore";
 import { useTaskStore } from "../store/tasksStore";
+import { useUserStore } from "../store/userStore";
 
 
 export default function SocketListener() {
@@ -26,6 +27,18 @@ export default function SocketListener() {
         useTaskStore(
             state => state.addAssignedTask
         );
+
+    const setUserStatus = useUserStore(state => state.setUserStatus);
+
+    useEffect(() => {
+        socket.on("user:status", ({ userId, isOnline }) => {
+            setUserStatus(userId, isOnline);
+        });
+
+        return () => {
+            socket.off("user:status");
+        };
+    }, [setUserStatus]);
 
     useEffect(() => {
 

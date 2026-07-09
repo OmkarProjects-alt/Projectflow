@@ -31,8 +31,10 @@ const ProfileProjects = ({ user, userAssignedProjects, userCreatedProjects }) =>
   return (
     <div className={`
       ${theme.card.primary}
+      ${theme.border}
       p-6
-      max-h-[500px]
+      max-h-125
+      h-full
       overflow-y-auto
       transition-all
       duration-300

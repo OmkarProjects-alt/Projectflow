@@ -104,6 +104,7 @@ const ProfileFooter = ({
       {!hasAboutContent && !hasProjects && !hasTasks && isCurrentUser && (
         <div className={`
           ${theme.card.primary}
+          ${theme.border}
           p-12
           text-center
           rounded-xl

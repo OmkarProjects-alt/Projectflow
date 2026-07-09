@@ -100,6 +100,7 @@ const ProfileTaskStatistics = ({ user, isCurrentUser }) => {
   return (
     <div className={`
       ${theme.card.primary}
+      ${theme.border}
       p-6
       max-h-[500px]
       overflow-y-auto
@@ -118,7 +119,6 @@ const ProfileTaskStatistics = ({ user, isCurrentUser }) => {
         mb-4
         border-b
         ${theme.table.divider}
-        bg-[#0b1423e4]
         backdrop-blur-sm
       `}>
         <div className="flex items-center justify-between">

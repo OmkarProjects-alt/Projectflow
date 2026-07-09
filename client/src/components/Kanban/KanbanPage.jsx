@@ -152,7 +152,6 @@ const KanbanPage = () => {
                       : task
               ),
       }));
-      console.log(error);
       addMessage(error?.response?.data?.message || "Failed to update status");
     }
   };

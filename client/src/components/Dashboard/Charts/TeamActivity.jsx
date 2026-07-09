@@ -20,6 +20,27 @@ import {
   Loader2
 } from 'lucide-react';
 
+// Skeleton component
+const ActivitySkeleton = ({ theme }) => (
+  <div className={`p-3 rounded-xl border ${theme.border} animate-pulse`}>
+    <div className="flex items-start gap-3">
+      <div className="shrink-0 w-8 h-8 rounded-full bg-gray-700" />
+      <div className="flex-1 min-w-0 space-y-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="h-4 w-24 rounded bg-gray-700" />
+          <div className="h-3 w-32 rounded bg-gray-700" />
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-4 rounded bg-gray-700" />
+          <div className="h-3 w-16 rounded bg-gray-700" />
+          <div className="h-3 w-3 rounded-full bg-gray-700" />
+          <div className="h-3 w-12 rounded bg-gray-700" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const TeamActivity = () => {
   const {
     activities,
@@ -51,8 +72,6 @@ const TeamActivity = () => {
   useEffect(() => {
     setVisibleActivities(activities.slice(0, 5));
   }, [activities]);
-
-  console.log("my all activitys", activities);
 
   const getActivityIcon = (type) => {
     const iconMap = {
@@ -156,10 +175,31 @@ const TeamActivity = () => {
     return message.length > 60 ? message.slice(0, 60) + '...' : message;
   };
 
+  // Loading state with skeleton
   if (loading) {
     return (
-      <div className={`w-full rounded-2xl ${theme.card.primary} ${theme.table.divider} border ${theme.text.primary} p-6 flex items-center justify-center min-h-50`}>
-        <Loader2 className={`h-6 w-6 ${theme.text.info} animate-spin`} />
+      <div className={`w-full rounded-2xl ${theme.card.primary} ${theme.table.divider} border ${theme.text.primary} flex flex-col h-134`}>
+        {/* Header Skeleton */}
+        <div className={`flex items-center justify-between p-4 border-b ${theme.table.divider} shrink-0`}>
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-gray-700/50 h-9 w-9 animate-pulse" />
+            <div className="h-5 w-32 rounded bg-gray-700 animate-pulse" />
+            <div className="h-5 w-8 rounded-full bg-gray-700 animate-pulse" />
+          </div>
+          <div className="h-4 w-16 rounded bg-gray-700 animate-pulse" />
+        </div>
+
+        {/* Activity List Skeleton */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <ActivitySkeleton key={i} theme={theme} />
+          ))}
+        </div>
+
+        {/* Footer Skeleton */}
+        <div className={`p-3 border-t ${theme.table.divider} shrink-0 text-center`}>
+          <div className="h-4 w-32 mx-auto rounded bg-gray-700 animate-pulse" />
+        </div>
       </div>
     );
   }

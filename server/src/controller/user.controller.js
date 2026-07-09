@@ -12,13 +12,15 @@ const getUsers = async (req, res) => {
 
   const search = req.query.search || "";
   const sort = req.query.sort || "all";
+  const projectId = req.query.projectId || "";
 
   const result = await fetchUsers(
     userId,
     page,
     limit,
     search,
-    sort
+    sort,
+    projectId
   );
 
   res.status(200).json(result);

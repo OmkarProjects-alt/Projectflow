@@ -3,6 +3,7 @@ import { useUserContext } from "./UserContext";
 import { io } from "socket.io-client";
 
 import { useTaskStore } from "../store/tasksStore";
+import { useNotificationStore } from "../store/notificationStore";
 
 const socketUrl = (import.meta.env.VITE_SOCKET_URL || "https://projectflow-30pc.onrender.com")
   .replace(/^['"]|['"]$/g, "");
@@ -12,7 +13,6 @@ const socket = io(socketUrl, {
     transports: ["websocket"],
 });
 
-console.log("socket connection", socket, "and", import.meta.env.VITE_SOCKET_URL);
 
 const SocketContext = createContext(socket);
 
@@ -22,6 +22,8 @@ export function SocketProvider({ children }) {
 
     const addMyTask = useTaskStore((state) => state.addMyTask);
     const updateMyTask = useTaskStore((state) => state.updateMyTask);
+
+    const addNotification  = useNotificationStore((state) => state.addNotification);
 
     useEffect(() => {
 
@@ -34,7 +36,7 @@ export function SocketProvider({ children }) {
         });
 
         socket.on("notification", (notification) => {
-            console.log("My notification is ", notification.message, "and",  notification);
+            addNotification(notification)
         });
 
         return () => {

@@ -82,10 +82,8 @@ export default function AppLayout() {
     const joinAllProjects = async () => {
       try {
         const ids = await fecthAllProjectIds();
-        console.log("ids", ids)
         if (ids) socket.emit("join-project", ids);
       } catch (e) {
-        console.log("error", e.message);
       }
     };
 
@@ -120,7 +118,7 @@ export default function AppLayout() {
         py-4
         sm:px-6
         lg:px-8
-        z-30
+        z-30 
       "
     >
       <Outlet />
