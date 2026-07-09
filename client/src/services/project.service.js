@@ -45,7 +45,6 @@ export const getProjectsId = () => {
 
 
 export const inviteMembers = ({projectId, members}) => {
-    console.log("which type of data cheking", projectId, 'and', members)
     return api.post("/project/invite-members", {
         projectId,
         members,

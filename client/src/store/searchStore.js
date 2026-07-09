@@ -97,7 +97,6 @@ export const useSearchStore = create((set, get) => ({
         },
       }));
     } catch (error) {
-      console.log(error);
 
       set({
         loading: false,

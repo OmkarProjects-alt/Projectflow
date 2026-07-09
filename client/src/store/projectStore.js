@@ -79,14 +79,12 @@ export const useProjectStore = create((set, get) => ({
                 return;
             }
             const result = await getAssignedProject();
-            console.log("my all projects that are assigned form project store" , result?.data?.projects);
             if(result?.data?.success) {
                 set({
                     assignedProject: result?.data?.projects,
                     assignedProjectLoaded: true,
                     assignedPagination: result.data.pagination
                 })
-                console.log("my all projects" , result?.data?.projects);
             }
         } catch(error) {
             set({

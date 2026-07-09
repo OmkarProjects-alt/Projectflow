@@ -2,7 +2,6 @@ import api from '../utils/api';
 import axios from 'axios';
 
 export const register = async (data) => {
-    console.log("my api", api);
     return api.post('/auth/register', 
         data,
     );

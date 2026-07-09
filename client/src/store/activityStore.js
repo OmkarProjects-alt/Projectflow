@@ -53,7 +53,6 @@ export const useActivityStore = create((set) => ({
         loading: false,
       });
     } catch (error) {
-      console.error(error);
       set({ loading: false });
     }
   },

@@ -28,7 +28,6 @@ export const deleteNotification = (id) => {
 }
 
 export const acceptInvite=(nid)=>{
-    console.log("chek notification id", nid);
     return api.post(
         `/notification/${nid}/accept`,
         {}

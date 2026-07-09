@@ -41,11 +41,9 @@ export const useTaskStore = create((set) => ({
                     allMyTasksStatus: result.data.status,
                     allMyStatusLoaded: true,
                 });
-                console.log("is data comming from backend status", result.data.status)
             }
         } catch (error) {
             set({ loading: false })
-            console.log("somthing wrong", error?.response?.data?.message || error.message);
         }
     },
 
@@ -173,10 +171,7 @@ export const useTaskStore = create((set) => ({
                 });
             }
         } catch (error) {
-            console.log(
-                error?.response?.data?.message ||
-                error?.message
-            );
+            
         } finally {
             set({ fetchingLoading: false })
         }
@@ -190,10 +185,8 @@ export const useTaskStore = create((set) => ({
                 set({
                     allCreatedTasksStatus: result.data.tasksStatus,
                 });
-                console.log("is data comming from backend status", result.data.tasksStatus)
             }
         } catch (error) {
-            console.log("somthing wrong", error?.response?.data?.message || error.message);
         }
     },
 
