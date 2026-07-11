@@ -1,7 +1,7 @@
 import React from "react";
 import CommonHeader from "../../common/CommonHeader";
 
-const ProjectDetailHeader = ({ project }) => {
+const ProjectDetailHeader = ({ project, isOwner }) => {
 
   return (
     <div className="">
@@ -13,6 +13,7 @@ const ProjectDetailHeader = ({ project }) => {
           progress = {project?.progress}
           project={project}
           from = "projectDetail"
+          isOwner = {isOwner}
       />
     </div>
   );

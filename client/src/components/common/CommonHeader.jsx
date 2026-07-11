@@ -24,7 +24,8 @@ const CommonHeader = ({
   priority = null, 
   project, 
   isFromAssignedTask,
-  task 
+  task,
+  isOwner
 }) => {
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -258,37 +259,39 @@ const CommonHeader = ({
         </div>
 
         {/* Right Side - Actions */}
-        <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
-          {!isFromAssignedTask && from ? (
-            <button
-              onClick={handleEdit}
-              className={`
-                flex items-center justify-center
-                gap-2
-                px-4 py-2
-                w-full sm:w-auto
-                rounded-xl
-                ${theme.button.secondary}
-                ${theme.text.primary}
-                transition-all
-                duration-200
-                hover:scale-[1.02]
-                active:scale-[0.98]
-                cursor-pointer
-              `}
-            >
-              <Pencil size={16} />
-              Edit {from === "TaskDetail" ? "Task" : "Project"}
-            </button>
-          ) : from ? (
-            <StatusDropdown
-              currentStatus={status}
-              onStatusChange={(newStatus) => {
-                updateStatus(task?.tid, newStatus);
-              }}
-            />
-          ) : null}
-        </div>
+        {isOwner && (
+          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+            {!isFromAssignedTask && from ? (
+              <button
+                onClick={handleEdit}
+                className={`
+                  flex items-center justify-center
+                  gap-2
+                  px-4 py-2
+                  w-full sm:w-auto
+                  rounded-xl
+                  ${theme.button.secondary}
+                  ${theme.text.primary}
+                  transition-all
+                  duration-200
+                  hover:scale-[1.02]
+                  active:scale-[0.98]
+                  cursor-pointer
+                `}
+              >
+                <Pencil size={16} />
+                Edit {from === "TaskDetail" ? "Task" : "Project"}
+              </button>
+            ) : from ? (
+              <StatusDropdown
+                currentStatus={status}
+                onStatusChange={(newStatus) => {
+                  updateStatus(task?.tid, newStatus);
+                }}
+              />
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -60,3 +60,9 @@ export const removeMember = (projectId, memberId) => {
         },
     });
 };
+
+export const getAssignedProjectDetailsForMember = (projectId) => {
+    return api.get(`/project/assigned-project-details/${projectId}`,
+        {},
+    );
+}

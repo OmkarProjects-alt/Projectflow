@@ -2,6 +2,7 @@ const {
     inviteMembersService, 
     removeMemberService,
     fetchUserAssignedProjects,
+    fetchAssignedProjectDetail,
 } = require("../services/project.service");
 
 const inviteMembers = async (req, res) => {
@@ -76,9 +77,27 @@ const getAssignedProjects = async (req, res) => {
     });
 }
 
+const getAssignedProjectDetail = async (req, res) => {
+    const { projectId } = req.params;
+    const userId = req.user.uid;
+
+    const result = await fetchAssignedProjectDetail(projectId, userId);
+
+    if (!result) {
+        res.status(404);
+        throw new Error("Project not found or you are not assigned to this project.");
+    }
+
+    res.status(200).json({
+        success: true,
+        project: result.project,
+    });
+}
+
 module.exports = {
     inviteMembers,
     removeMember,
     getUserAssignedProjects,
     getAssignedProjects,
+    getAssignedProjectDetail,
 };

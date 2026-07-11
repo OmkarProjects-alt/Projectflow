@@ -35,7 +35,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
       await logoutUser();
       localStorage.clear();
       sessionStorage.clear();
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       addMessage("Failed to Logout")
     } finally {

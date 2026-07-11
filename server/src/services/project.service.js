@@ -402,9 +402,83 @@ const fetchUserAssignedProjects = async (userId) => {
     );
 }
 
+const fetchAssignedProjectDetail = async (projectId, userId) => {
+    const project = await pool.query(
+        `
+        SELECT
+            json_build_object(
+                'pid', p.pid,
+                'title', p.title,
+                'description', p.description,
+                'status', p.status,
+                'start_date', p.start_date,
+                'deadline', p.deadline,
+                'created_by', p.created_by,
+                'created_at', p.created_at,
+                
+                'tasks', COALESCE(
+                    json_agg(
+                        json_build_object(
+                            'tid', t.tid,
+                            'title', t.title,
+                            'description', t.description,
+                            'status', t.status,
+
+                            'assigned_user_name', u.name,
+                            'assigned_user_id', u.uid,
+                            'assigned_user_role', u.user_role,
+
+                            'assigned_by_id', t.assigned_by,
+                            'assigned_by_name', assigned_by.name,
+
+                            'project_id', t.project_id,
+
+                            'created_at', t.created_at
+                        )
+                    ) FILTER (WHERE t.tid IS NOT NULL),
+
+                    '[]'::json
+                ) 
+            ) AS project
+
+        FROM project_members pm
+        JOIN projects p
+            ON pm.project_id = p.pid
+
+        LEFT JOIN tasks t
+            ON p.pid = t.project_id
+
+        LEFT JOIN users u
+            ON t.assigned_to = u.uid
+        
+        LEFT JOIN users assigned_by
+            ON t.assigned_by = assigned_by.uid
+        
+
+        WHERE 
+            p.pid = $1 
+        AND 
+            pm.user_id = $2
+
+        GROUP BY
+            p.pid,
+            p.title,
+            p.description,
+            p.status,
+            p.start_date,
+            p.deadline,
+            p.created_by,
+            p.created_at;
+        `,
+        [projectId, userId]
+    );
+
+    return project.rows[0];
+};
 
 module.exports = {
     inviteMembersService,
     removeMemberService,
     fetchUserAssignedProjects,
+    fetchAssignedProjectDetail,
 };

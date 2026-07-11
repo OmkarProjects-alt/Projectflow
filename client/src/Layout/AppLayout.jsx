@@ -8,7 +8,7 @@ import { useNotificationStore } from "../store/notificationStore";
 import { useError } from "../context/ErrorAndSuccessMsgContext";
 import MessageAlert from '../components/common/MessageAlert';
 import { useUserContext } from "../context/UserContext";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeProvider";
 import { useSocket } from "../context/SocketContext";
 import { getProjectsId } from "../services/project.service";
@@ -21,9 +21,11 @@ export default function AppLayout() {
 
   const socket = useSocket();
 
-  const { addMessage } = useError();
+  const { addMessage, clearMessage } = useError();
 
-  const { setUserData, userData, fetchUserData } = useUserContext();
+  const navigate = useNavigate();
+
+  const { setUserData, userData, fetchUserData, verifySession } = useUserContext();
 
   const MyProjects = useProjectStore((state) => state.MyProjects);
   const assignedProject = useProjectStore((state) => state.assignedProject);
@@ -73,6 +75,26 @@ export default function AppLayout() {
       return result.data.projectIds;
     }
   }
+
+  useEffect(() => {
+      const checkSession = async () => {
+        try {
+          const res = await verifySession();
+          if (res.data.success) {
+            return;
+          }
+        } catch (_) {
+          clearMessage();
+          addMessage("Session Expired. Please Login Again", false);
+          localStorage.clear();
+          sessionStorage.clear();
+          setTimeout(() => {
+            navigate('/')
+          }, 1000);
+        }
+      };
+      checkSession();
+    }, []);
 
   useEffect(() => {
     if (!userData) return;

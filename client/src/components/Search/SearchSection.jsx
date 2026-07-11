@@ -34,11 +34,11 @@ const SearchSection = ({ title, items, type }) => {
   const getLink = (item) => {
     switch (type) {
       case 'project':
-        return `/projectflow/projects/${item.id || item.pid}`;
+        return `/projectflow/projects/${item.pid || item.pid}`;
       case 'task':
-        return `/projectflow/task/${item.id || item.tid}`;
+        return `/projectflow/task/${item.tid || item.tid}`;
       case 'member':
-        return `/profile/${item.id || item.uid}`;
+        return `/projectflow/user/${item.uid || item.uid}`;
       default:
         return '#';
     }

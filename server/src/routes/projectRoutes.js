@@ -6,7 +6,8 @@ const {
     inviteMembers, 
     removeMember,
     getUserAssignedProjects,
-    getAssignedProjects
+    getAssignedProjects,
+    getAssignedProjectDetail
 } = require("../controller/project.controller")
 const pool = require('../config/DbConnection');
 
@@ -199,6 +200,12 @@ Router.get(
     authMiddleware,
     asyncHandler(getUserAssignedProjects)
 );
+
+Router.get(
+    "/assigned-project-details/:projectId",
+    authMiddleware,
+    asyncHandler(getAssignedProjectDetail)
+)
 
 Router.get('/user-created-projects/:userId', authMiddleware,
     asyncHandler(async (req, res) => {

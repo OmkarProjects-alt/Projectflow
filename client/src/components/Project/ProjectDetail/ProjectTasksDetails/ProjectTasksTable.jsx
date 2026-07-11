@@ -80,7 +80,7 @@ const TableSkeleton = ({ theme }) => {
   );
 };
 
-const ProjectTasksTable = ({ tasks, project, loading }) => {
+const ProjectTasksTable = ({ tasks, project, loading, isOwner }) => {
   const { theme } = useTheme();
   
   const [openTaskModal, setOpenTaskModal] = useState(false);
@@ -244,25 +244,27 @@ const ProjectTasksTable = ({ tasks, project, loading }) => {
             </span>
           </h2>
 
-          <button
-            onClick={() => setOpenTaskModal(!openTaskModal)}
-            className={`
-              flex items-center gap-2
-              px-3 py-2
-              rounded-lg
-              ${theme.button.primary}
-              text-white
-              text-xs
-              transition-all
-              duration-200
-              hover:scale-[1.02]
-              active:scale-[0.98]
-            `}
-          >
-            <Plus size={14} />
-            Create Task
-          </button>
-        </div>
+          {isOwner && (
+            <button
+              onClick={() => setOpenTaskModal(!openTaskModal)}
+              className={`
+                flex items-center gap-2
+                px-3 py-2
+                rounded-lg
+                ${theme.button.primary}
+                text-white
+                text-xs
+                transition-all
+                duration-200
+                hover:scale-[1.02]
+                active:scale-[0.98]
+              `}
+            >
+              <Plus size={14} />
+              Create Task
+            </button>
+          )}
+          </div>
 
         {/* Table */}
         <div className="overflow-x-auto max-h-70 h-70 overflow-y-auto">
@@ -396,7 +398,8 @@ const ProjectTasksTable = ({ tasks, project, loading }) => {
                         </span>
                       </td>
 
-                      <td className="px-2 py-2 w-10 relative">
+                     {isOwner && (
+                       <td className="px-2 py-2 w-10 relative">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -508,6 +511,7 @@ const ProjectTasksTable = ({ tasks, project, loading }) => {
                           </div>
                         )}
                       </td>
+                     )}
                     </tr>
                   );
                 })

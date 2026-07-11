@@ -503,8 +503,7 @@ const updateAndStoreTaskStatus = async (
       `
       UPDATE tasks t
       SET
-        status = $1,
-        updated_at = NOW()
+        status = $1
       FROM users u,
            projects p
       WHERE

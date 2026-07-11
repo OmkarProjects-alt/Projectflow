@@ -96,6 +96,7 @@ const CommonCards = ({
   return (
     <div
       className={`
+        relative
         group
         flex 
         flex-col

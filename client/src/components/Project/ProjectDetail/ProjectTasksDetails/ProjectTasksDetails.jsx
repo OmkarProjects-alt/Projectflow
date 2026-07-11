@@ -6,7 +6,7 @@ import TeamMembers from './TeamMembers';
 import { useTaskStore } from '../../../../store/tasksStore';
 import { useError } from '../../../../context/ErrorAndSuccessMsgContext';
 
-const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
+const ProjectTasksDetails = ({ tasks, users, project, loading, isOwner }) => {
   const { theme } = useTheme();
 
   const myProjectTasks = useTaskStore((state) => state.createdTasks);
@@ -17,7 +17,7 @@ const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
   const [isFetching, setIsFetching] = useState(false);
 
   const IsTaskAlreadyExist = myProjectTasks.some(
-    (task) => String(task?.project_id) === String(project.pid)
+    (task) => String(task?.project_id) === String(project?.pid)
   );
 
   useEffect(() => {
@@ -29,8 +29,7 @@ const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
         setIsFetching(true);
         let page = 1;
         let limit = 10
-        await FetchMyTasks(page, limit, project.pid);
-
+        await FetchMyTasks(page, limit, project?.pid);
         
       } catch (error) {
         addMessage("Network problem ")
@@ -42,7 +41,7 @@ const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
   }, [project, IsTaskAlreadyExist, FetchMyTasks]);
   
   const TaskDetail = myProjectTasks.filter(
-    (t) => t.project_id === project.pid
+    (t) => t.project_id === project?.pid
   );
 
   return (
@@ -54,6 +53,7 @@ const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
               tasks={TaskDetail}
               project={project}
               loading={isFetching}
+              isOwner={isOwner}
             />
           </div>
 
@@ -65,6 +65,7 @@ const ProjectTasksDetails = ({ tasks, users, project, loading }) => {
             <TeamMembers 
               users={users} 
               loading={isFetching}
+              isOwner={isOwner}
             />
           </div>
         </div>

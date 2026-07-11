@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { getProjects, getAssignedProject } from '../services/project.service'
+import { getProjects, getAssignedProject, getAssignedProjectDetailsForMember } from '../services/project.service'
 
 export const useProjectStore = create((set, get) => ({
 
@@ -7,6 +7,8 @@ export const useProjectStore = create((set, get) => ({
     MyProjects: [],
     loading: false,
     messages: { message: "", success: false},
+
+    assignedProjectDetailsForMember: [],
 
 
     fetchProjects: async () => {
@@ -100,4 +102,43 @@ export const useProjectStore = create((set, get) => ({
 
     setAssignedProjects: (projects) =>
         set({ assignedProject: projects }),
+
+
+    catchAssignedProjectsDetail: {},
+    fetchAssignedProjectDetailsForMember: async (projectId) => {
+        try {
+
+            const key = `${projectId}`;
+            const cache = get().catchAssignedProjectsDetail[key];
+
+            if (cache) {
+                set({
+                    loading: true,
+                    messages: { message: ""},
+                    assignedProjectDetailsForMember: cache,
+                });
+                return;
+            }
+
+            const result = await getAssignedProjectDetailsForMember(projectId);
+
+            if(result.data.success) {
+                set({
+                    assignedProjectDetailsForMember: result.data.project,
+                    loading: false,
+                    catchAssignedProjectsDetail: {
+                        ...get().catchAssignedProjectsDetail,
+                        [key]: result.data.project,
+                    },
+                });
+
+                console.log("i am checking my data", result.data.project);
+            }
+        } catch (message) {
+            set({
+                loading: false,
+                messages: { message: error?.response?.data?.message || error.message}
+            });
+        }
+    },
 }))

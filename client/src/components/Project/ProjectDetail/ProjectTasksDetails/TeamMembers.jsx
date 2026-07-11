@@ -35,7 +35,7 @@ const TeamMembersSkeleton = ({ theme }) => {
   );
 };
 
-const TeamMembers = ({ users, onInvite, loading }) => {
+const TeamMembers = ({ users, onInvite, loading, isOwner }) => {
   const { projectId } = useParams();
   const { theme } = useTheme();
 
@@ -103,7 +103,9 @@ const TeamMembers = ({ users, onInvite, loading }) => {
             </span>
           </div>
 
-          <InviteMemberBtn users={users} projectId={projectId} />
+          {isOwner && (
+            <InviteMemberBtn users={users} projectId={projectId} />
+          )}
         </div>
 
         {/* Members Grid */}
@@ -202,7 +204,9 @@ const TeamMembers = ({ users, onInvite, loading }) => {
             <p className="text-xs mt-1">
               Invite team members to collaborate
             </p>
-            <InviteMemberBtn users={users} projectId={projectId} />
+            {isOwner && (
+              <InviteMemberBtn users={users} projectId={projectId} />
+            )}
           </div>
         )}
       </div>
